@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}이미지 변환 프로그램{% endblock %}
+{% block content %}
+<h1>이미지 변환 프로그램</h1>
+<p class="lead">상품 이미지를 일괄로 정사각형 규격화, 배경 제거, 워터마크, 포맷 변환합니다.</p>
+
+{% if ai_bg_available %}
+<p class="badge badge-ok">AI 배경제거(rembg) 사용 가능</p>
+{% else %}
+<p class="badge badge-warn">AI 배경제거 모델(rembg) 미설치 - 흰색/단색 배경 감지 방식으로 대체 동작합니다. (설치: <code>pip install rembg onnxruntime</code>)</p>
+{% endif %}
+
+<form id="image-form" class="form">
+  <label>이미지 파일 선택 (여러 장 가능)
+    <input type="file" name="images" id="images" multiple accept="image/*" required>
+  </label>
+
+  <fieldset>
+    <legend>배경 제거</legend>
+    <label><input type="checkbox" name="remove_bg" id="remove_bg"> 배경 제거 적용</label>
+    <label>방식
+      <select name="bg_method">
+        <option value="auto">자동(AI 우선, 없으면 단색 감지)</option>
+        <option value="ai">AI만 사용</option>
+        <option value="simple">단색 배경 감지만 사용</option>
+      </select>
+    </label>
+    <label>흰색 판정 밝기 임계값(0-255) <input type="number" name="bg_threshold" value="235" min="150" max="255"></label>
+    <label>모서리 색상 허용오차 <input type="number" name="bg_tolerance" value="18" min="0" max="80"></label>
+  </fieldset>
+
+  <fieldset>
+    <legend>크기 규격화</legend>
+    <label><input type="radio" name="size_mode" value="pad_square" checked> 정사각형 패딩(흰 배경으로 채움)</label>
+    <label><input type="radio" name="size_mode" value="resize"> 비율 유지 리사이즈</label>
+    <label><input type="radio" name="size_mode" value="none"> 크기 변경 안함</label>
+    <label>기준 크기(px) <input type="number" name="size" value="1000" min="200" max="3000"></label>
+  </fieldset>
+
+  <fieldset>
+    <legend>워터마크</legend>
+    <label>문구 <input type="text" name="watermark_text" placeholder="예: MyShop.com"></label>
+    <label>위치
+      <select name="watermark_position">
+        <option value="bottom-right">우측 하단</option>
+        <option value="bottom-left">좌측 하단</option>
+        <option value="top-right">우측 상단</option>
+        <option value="top-left">좌측 상단</option>
+        <option value="center">중앙</option>
+      </select>
+    </label>
+    <label>투명도(0-255) <input type="number" name="watermark_opacity" value="110" min="0" max="255"></label>
+  </fieldset>
+
+  <fieldset>
+    <legend>출력 포맷</legend>
+    <label><input type="radio" name="format" value="PNG" checked> PNG (투명배경 유지)</label>
+    <label><input type="radio" name="format" value="JPG"> JPG</label>
+  </fieldset>
+
+  <button type="submit" class="btn btn-primary">변환 실행 &amp; 다운로드</button>
+</form>
+<p id="status"></p>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById("image-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const fd = new FormData();
+  [...form.images.files].forEach(f => fd.append("images", f));
+  fd.append("remove_bg", form.remove_bg.checked);
+  fd.append("bg_method", form.bg_method.value);
+  fd.append("bg_threshold", form.bg_threshold.value);
+  fd.append("bg_tolerance", form.bg_tolerance.value);
+
+  const sizeMode = form.size_mode.value;
+  fd.append("pad_square", sizeMode === "pad_square");
+  fd.append("resize", sizeMode === "resize");
+  fd.append("size", form.size.value);
+
+  fd.append("watermark_text", form.watermark_text.value);
+  fd.append("watermark_position", form.watermark_position.value);
+  fd.append("watermark_opacity", form.watermark_opacity.value);
+  fd.append("format", form.format.value);
+
+  document.getElementById("status").textContent = "처리 중...";
+  const res = await fetch("{{ url_for('image.process') }}", {method: "POST", body: fd});
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({error: "처리 실패"}));
+    document.getElementById("status").textContent = "오류: " + err.error;
+    return;
+  }
+  const disposition = res.headers.get("Content-Disposition") || "";
+  const match = disposition.match(/filename="?([^"]+)"?/);
+  const filename = match ? match[1] : "processed_images";
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+  document.getElementById("status").textContent = "완료! 다운로드가 시작됩니다.";
+});
+</script>
+{% endblock %}

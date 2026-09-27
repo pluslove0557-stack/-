@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}셀러 자동화 툴킷{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="{{ url_for('home.index') }}">셀러 자동화 툴킷</a>
+  <nav class="nav">
+    <a href="{{ url_for('margin.index') }}">마진계산기</a>
+    <a href="{{ url_for('image.index') }}">이미지변환</a>
+    <a href="{{ url_for('listing.index') }}">상품등록</a>
+    <a href="{{ url_for('sourcing.index') }}">소싱스코어링</a>
+    <a href="{{ url_for('prompts.index') }}">이미지프롬프터</a>
+  </nav>
+</header>
+<main class="container">
+  {% block content %}{% endblock %}
+</main>
+<footer class="footer">
+  <p>로컬 실행 전용 개인 판매 자동화 도구입니다. 각 오픈마켓 등록은 반드시 공식 판매자센터/오픈API 정책을 따라주세요.</p>
+</footer>
+{% block scripts %}{% endblock %}
+</body>
+</html>

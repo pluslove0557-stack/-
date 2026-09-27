@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}셀러 자동화 툴킷 - 홈{% endblock %}
+{% block content %}
+<h1>셀러 자동화 툴킷</h1>
+<p class="lead">무재고/위탁 셀러가 자주 쓰는 5가지 반복 업무를 자동화하는 로컬 도구 모음입니다.</p>
+
+<div class="grid">
+  <a class="tool-card" href="{{ url_for('margin.index') }}">
+    <h2>1. 엑셀 마진 계산기</h2>
+    <p>원가/판매가/수수료/광고비를 입력하면 개당 마진, 마진율, 손익분기 판매가를 자동 계산하고 수식이 살아있는 엑셀로 내보냅니다.</p>
+  </a>
+  <a class="tool-card" href="{{ url_for('image.index') }}">
+    <h2>2. 이미지 변환 프로그램</h2>
+    <p>상품 이미지를 정사각형 규격으로 맞추고, 흰 배경 제거(가능하면 AI 배경제거), 워터마크, 포맷 변환을 일괄 처리합니다.</p>
+  </a>
+  <a class="tool-card" href="{{ url_for('listing.index') }}">
+    <h2>3. 자동 상품등록 도우미</h2>
+    <p>내 상품 데이터를 쿠팡/네이버/11번가 대량등록 양식 컬럼에 맞춰 자동 매핑하여 업로드용 파일을 생성합니다.</p>
+  </a>
+  <a class="tool-card" href="{{ url_for('sourcing.index') }}">
+    <h2>4. 소싱 스코어링(AI소싱기)</h2>
+    <p>도매 후보 상품 리스트를 마진율/수요/경쟁강도 기준으로 자동 채점하고 순위를 매깁니다.</p>
+  </a>
+  <a class="tool-card" href="{{ url_for('prompts.index') }}">
+    <h2>5. 이미지 변환 프롬프터</h2>
+    <p>배경/조명/앵글/톤을 선택하면 AI 이미지 도구에 바로 붙여넣을 한글+영문 프롬프트를 생성합니다.</p>
+  </a>
+</div>
+{% endblock %}

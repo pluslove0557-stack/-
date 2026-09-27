@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}자동 상품등록 도우미{% endblock %}
+{% block content %}
+<h1>자동 상품등록 도우미</h1>
+<p class="lead">내 상품 데이터(csv/xlsx)를 채널별 대량등록 양식의 컬럼에 자동으로 매핑해서 업로드용 파일을 만듭니다.</p>
+<p class="badge badge-warn">주의: 여기 있는 양식은 참고용 표준 컬럼입니다. 실제 등록 전 반드시 각 판매자센터에서 받은 최신 공식 양식과 비교/확인하세요. 이 도구는 채널에 직접 자동 게시하지 않습니다.</p>
+
+<form id="upload-form" class="form">
+  <label>채널 템플릿 선택
+    <select name="template" id="template-select">
+      {% for key, t in templates.items() %}
+      <option value="{{ key }}">{{ t.label }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <p id="template-notes" class="muted"></p>
+  <label>상품 데이터 파일 (csv 또는 xlsx)
+    <input type="file" name="source_file" id="source_file" accept=".csv,.xlsx" required>
+  </label>
+  <button type="submit" class="btn btn-primary">업로드 &amp; 매핑 불러오기</button>
+</form>
+
+<div id="mapping-section" style="display:none">
+  <h2>컬럼 매핑</h2>
+  <p class="muted">왼쪽은 등록 양식 컬럼, 오른쪽은 내 데이터에서 가져올 컬럼입니다. 자동으로 매칭했으니 확인 후 필요하면 수정하세요. 목록에 없는 값을 직접 입력하면 모든 행에 고정값으로 채워집니다.</p>
+  <table id="mapping-table">
+    <thead><tr><th>등록 양식 컬럼</th><th>내 데이터 컬럼 / 고정값</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <h3>미리보기 (원본 데이터 상위 5행)</h3>
+  <div class="table-wrap"><table id="preview-table"><thead></thead><tbody></tbody></table></div>
+  <button id="export-btn" class="btn btn-primary">등록용 엑셀 생성</button>
+</div>
+<p id="status"></p>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const templates = {{ templates|tojson }};
+let currentUploadId = null;
+let currentTemplate = null;
+let sourceHeaders = [];
+
+function updateNotes() {
+  const key = document.getElementById("template-select").value;
+  document.getElementById("template-notes").textContent = templates[key].notes;
+}
+document.getElementById("template-select").addEventListener("change", updateNotes);
+updateNotes();
+
+document.getElementById("upload-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const fd = new FormData();
+  fd.append("template", form.template.value);
+  fd.append("source_file", form.source_file.files[0]);
+
+  document.getElementById("status").textContent = "업로드 중...";
+  const res = await fetch("{{ url_for('listing.upload') }}", {method: "POST", body: fd});
+  const data = await res.json();
+  if (!res.ok) {
+    document.getElementById("status").textContent = "오류: " + data.error;
+    return;
+  }
+  document.getElementById("status").textContent = `${data.row_count}행 불러옴`;
+  currentUploadId = data.upload_id;
+  currentTemplate = form.template.value;
+  sourceHeaders = data.source_headers;
+
+  const tbody = document.querySelector("#mapping-table tbody");
+  tbody.innerHTML = "";
+  data.target_columns.forEach(col => {
+    const tr = document.createElement("tr");
+    const th = document.createElement("td");
+    th.textContent = col;
+    const td = document.createElement("td");
+    const select = document.createElement("input");
+    select.setAttribute("list", "source-headers-list");
+    select.dataset.target = col;
+    select.value = data.suggested_mapping[col] || "";
+    td.appendChild(select);
+    tr.appendChild(th); tr.appendChild(td);
+    tbody.appendChild(tr);
+  });
+
+  let datalist = document.getElementById("source-headers-list");
+  if (!datalist) {
+    datalist = document.createElement("datalist");
+    datalist.id = "source-headers-list";
+    document.body.appendChild(datalist);
+  }
+  datalist.innerHTML = sourceHeaders.map(h => `<option value="${h}">`).join("");
+
+  const previewHead = document.querySelector("#preview-table thead");
+  const previewBody = document.querySelector("#preview-table tbody");
+  previewHead.innerHTML = "<tr>" + sourceHeaders.map(h => `<th>${h}</th>`).join("") + "</tr>";
+  previewBody.innerHTML = data.preview_rows.map(r =>
+    "<tr>" + sourceHeaders.map(h => `<td>${(r[h] ?? "")}</td>`).join("") + "</tr>"
+  ).join("");
+
+  document.getElementById("mapping-section").style.display = "block";
+});
+
+document.getElementById("export-btn").addEventListener("click", async () => {
+  const mapping = {};
+  document.querySelectorAll("#mapping-table input").forEach(inp => {
+    mapping[inp.dataset.target] = inp.value;
+  });
+  document.getElementById("status").textContent = "생성 중...";
+  const res = await fetch("{{ url_for('listing.export') }}", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({upload_id: currentUploadId, template: currentTemplate, mapping})
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({error: "생성 실패"}));
+    document.getElementById("status").textContent = "오류: " + err.error;
+    return;
+  }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = `${currentTemplate}_상품등록양식.xlsx`; a.click();
+  URL.revokeObjectURL(url);
+  document.getElementById("status").textContent = "완료!";
+});
+</script>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}이미지 변환 프롬프터{% endblock %}
+{% block content %}
+<h1>이미지 변환 프롬프터</h1>
+<p class="lead">배경/조명/앵글/톤을 고르면 미드저니, 달리, 포토룸 AI 등 이미지 생성/편집 도구에 바로 붙여넣을 프롬프트를 만들어줍니다.</p>
+
+<form id="prompt-form" class="form">
+  <label>제품명 <input type="text" name="product_name" placeholder="예: 스테인리스 텀블러" required></label>
+  <label>배경
+    <select name="background">
+      {% for k, v in options.backgrounds.items() %}<option value="{{ k }}">{{ v }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>조명
+    <select name="lighting">
+      {% for k, v in options.lightings.items() %}<option value="{{ k }}">{{ v }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>앵글
+    <select name="angle">
+      {% for k, v in options.angles.items() %}<option value="{{ k }}">{{ v }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>톤
+    <select name="tone">
+      {% for k, v in options.tones.items() %}<option value="{{ k }}">{{ v }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>생성 개수 <input type="number" name="count" value="3" min="1" max="5"></label>
+  <button type="submit" class="btn btn-primary">프롬프트 생성</button>
+</form>
+
+<div id="results"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById("prompt-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const payload = Object.fromEntries(fd.entries());
+  const res = await fetch("{{ url_for('prompts.generate') }}", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(payload)
+  });
+  const data = await res.json();
+  const container = document.getElementById("results");
+  container.innerHTML = data.variants.map((v, i) => `
+    <div class="prompt-card">
+      <h3>변형 ${i+1}</h3>
+      <p><b>한글 설명</b></p>
+      <textarea readonly rows="3">${v.ko}</textarea>
+      <p><b>영문 프롬프트</b></p>
+      <textarea readonly rows="3">${v.en}</textarea>
+      <button class="btn-link copy-btn">영문 프롬프트 복사</button>
+    </div>
+  `).join("");
+  container.querySelectorAll(".copy-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const ta = btn.previousElementSibling;
+      navigator.clipboard.writeText(ta.value);
+      btn.textContent = "복사됨!";
+      setTimeout(() => btn.textContent = "영문 프롬프트 복사", 1500);
+    });
+  });
+});
+</script>
+{% endblock %}

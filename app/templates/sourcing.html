@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}소싱 스코어링{% endblock %}
+{% block content %}
+<h1>소싱 스코어링 (AI소싱기)</h1>
+<p class="lead">도매 후보 상품 CSV를 업로드하면 마진율/수요(검색량)/경쟁강도를 기준으로 자동 채점해서 순위를 매깁니다. 실제 AI 모델이 아니라 투명한 규칙 기반 점수 계산입니다.</p>
+<p class="muted">필수 컬럼: 상품명, 도매가, 예상판매가. 선택 컬럼: 카테고리, 월간검색량, 경쟁상품수.
+  <a href="{{ url_for('sourcing.sample') }}">샘플 CSV 다운로드</a>
+</p>
+
+<form id="upload-form" class="form">
+  <label>후보 상품 CSV 파일
+    <input type="file" name="candidates_file" accept=".csv" required>
+  </label>
+  <button type="submit" class="btn btn-primary">분석 실행</button>
+</form>
+
+<div id="result-section" style="display:none">
+  <div class="toolbar"><button id="export-btn" class="btn">CSV로 결과 내보내기</button></div>
+  <div class="table-wrap">
+  <table id="result-table">
+    <thead>
+      <tr><th>순위</th><th>상품명</th><th>카테고리</th><th>도매가</th><th>예상판매가</th>
+      <th>마진액</th><th>마진율(%)</th><th>검색량점수</th><th>경쟁점수</th><th>종합점수</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  </div>
+</div>
+<p id="status"></p>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentRows = [];
+
+document.getElementById("upload-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  document.getElementById("status").textContent = "분석 중...";
+  const res = await fetch("{{ url_for('sourcing.analyze') }}", {method: "POST", body: fd});
+  const data = await res.json();
+  if (!res.ok) {
+    document.getElementById("status").textContent = "오류: " + data.error;
+    return;
+  }
+  currentRows = data.rows;
+  const tbody = document.querySelector("#result-table tbody");
+  tbody.innerHTML = currentRows.map((r, i) => `
+    <tr>
+      <td>${i+1}</td><td>${r.name}</td><td>${r.category || "-"}</td>
+      <td>${r.cost}</td><td>${r.price}</td>
+      <td>${r.margin_amount}</td><td>${r.margin_pct}%</td>
+      <td>${r.demand_score}</td><td>${r.competition_score}</td>
+      <td><b>${r.score}</b></td>
+    </tr>`).join("");
+  document.getElementById("result-section").style.display = "block";
+  document.getElementById("status").textContent = `${data.count}개 분석 완료`;
+});
+
+document.getElementById("export-btn").addEventListener("click", async () => {
+  const res = await fetch("{{ url_for('sourcing.export') }}", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({rows: currentRows})
+  });
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "소싱_스코어링_결과.csv"; a.click();
+  URL.revokeObjectURL(url);
+});
+</script>
+{% endblock %}
