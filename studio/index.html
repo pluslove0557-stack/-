@@ -1,0 +1,1034 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#c4511a" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<title>딸깍 스튜디오</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect rx='16' width='64' height='64' fill='%23c4511a'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-size='28' fill='white' font-family='sans-serif'%3E딸%3C/text%3E%3C/svg%3E" />
+<style>
+:root{--paper:#f6f1e7;--ink:#241c16;--clay:#c4511a;--pine:#1f6b45;--navy:#1e3a56;--line:#e3d5c4;--card:#fffdf8;--muted:#65584e;--danger:#9f1d1d;--gold:#8a5a12;--amber:#fef3c7;--amber-line:#fcd34d}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR","Noto Sans CJK KR","Segoe UI",sans-serif;font-size:17px;line-height:1.55;color:var(--ink);background:var(--paper)}
+body{min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}
+.layout{display:flex;min-height:100vh}
+aside{width:250px;background:#fffaf3;border-right:1px solid var(--line);position:sticky;top:0;height:100vh;padding:20px 12px;flex-shrink:0}
+.brand{display:flex;align-items:center;gap:12px;padding:0 8px 16px}
+.logo{width:46px;height:46px;border-radius:14px;background:var(--clay);color:#fff;font-weight:700;font-size:21px;display:grid;place-items:center}
+.brand b{display:block;font-size:20px;line-height:1.2}.brand span{font-size:14px;color:var(--muted)}
+nav{display:flex;flex-direction:column;gap:6px}
+nav button{text-align:left;border:0;background:none;border-radius:12px;padding:11px 14px;font-weight:700;cursor:pointer}
+nav button:hover{background:#fff}nav button.on{background:var(--clay);color:#fff}
+.main{flex:1;min-width:0}
+header.top{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 32px;background:rgba(246,241,231,.95);border-bottom:1px solid var(--line);backdrop-filter:blur(6px)}
+header.top p{color:var(--muted)}
+.mode{display:flex;align-items:center;gap:8px}.mode span{font-size:15px;color:var(--muted)}
+main{max-width:1000px;margin:0 auto;padding:24px 32px 40px}
+footer{max-width:1000px;margin:0 auto;padding:0 32px 40px;color:var(--muted);font-size:14px}
+h1{font-size:30px;line-height:1.25}h2{font-size:24px;margin:8px 0}
+.lead{color:var(--muted);margin:6px 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+.card.warn{background:var(--amber);border-color:var(--amber-line)}
+.card.err{background:#fef2f2;border-color:#fecaca;color:var(--danger);font-weight:700}
+.card.ok{background:#ecf6ef;border-color:#b9dcc6;color:var(--pine);font-weight:700}
+label.f{display:block;margin-bottom:14px}label.f>b{display:block;margin-bottom:4px}label.f small{display:block;color:var(--muted);font-size:14px;margin-bottom:4px}
+input[type=text],input[type=password],input[type=number],select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;padding:10px 12px}
+textarea{resize:vertical;min-height:70px}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--clay);outline-offset:0}
+.btn{border:0;border-radius:12px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--clay);color:#fff}
+.btn:disabled{opacity:.55;cursor:default}
+.btn.sec{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.pine{background:var(--pine)}.btn.navy{background:var(--navy)}.btn.danger{background:var(--danger)}.btn.sm{padding:6px 12px;font-size:15px}
+.btn.on{background:var(--clay);color:#fff;border-color:var(--clay)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g6{grid-template-columns:repeat(6,1fr)}
+.chip{display:inline-block;border-radius:999px;padding:2px 10px;font-size:14px;font-weight:700;color:#fff;background:var(--navy);margin-right:4px}
+.chip.hot{background:var(--clay)}.chip.good{background:var(--pine)}.chip.big{background:#6d3c93}
+.tag{display:inline-block;background:var(--line);border-radius:8px;padding:0 8px;font-size:14px;margin:2px 4px 2px 0}
+.video{display:flex;gap:14px}
+.thumb{width:110px;aspect-ratio:9/16;border-radius:14px;flex-shrink:0;object-fit:cover;background:linear-gradient(#d97848,#5c341f);color:#fff;font-weight:700;padding:8px;display:flex;align-items:flex-end;font-size:14px;line-height:1.3}
+.stat{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--muted);font-size:15px;margin:4px 0 8px}
+.field{margin-bottom:12px}.field .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;font-weight:700}
+.bad{background:#fecaca;color:var(--danger);border-radius:4px;padding:0 2px;font-weight:700}
+.pre{white-space:pre-wrap;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.muted{color:var(--muted)}.small{font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{border-bottom:1px solid var(--line);padding:6px 4px;text-align:right}th:first-child,td:first-child{text-align:left}
+th{background:#fff;position:sticky;top:0}
+td input{padding:6px 8px;text-align:right}td:first-child input{text-align:left}
+.pos{color:var(--pine);font-weight:700}.neg{color:var(--danger);font-weight:700}
+.scroll{overflow-x:auto}
+canvas{width:100%;height:auto;border:1px solid var(--line);border-radius:14px;background:#fff}
+.strip{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-weight:700;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+@media(prefers-color-scheme:dark){:root{--paper:#1b1612;--ink:#f3ebe0;--clay:#e0703a;--pine:#3a9a68;--navy:#4a7aa8;--line:#3a2f27;--card:#251e18;--muted:#b8a999;--danger:#ff8a8a;--amber:#3a2e0e;--amber-line:#8a6a10}
+aside{background:#211a15}nav button:hover{background:#2c231c}header.top{background:rgba(27,22,18,.95)}
+input[type=text],input[type=password],input[type=number],select,textarea,.btn.sec,th,.pre,.card[style*="background:#fff"]{background:#1b1612!important;color:var(--ink)}
+.card.err{background:#3a1616;border-color:#7a2a2a}.card.ok{background:#12301f;border-color:#2a6a46}.bad{background:#5a2020}}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;cursor:pointer;text-align:left}
+.kpi small{display:block;color:var(--muted);font-size:14px}.kpi b{display:block;font-size:30px;line-height:1.2}.kpi span{font-size:13px;color:var(--muted)}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.quick button{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 8px;cursor:pointer;text-align:center;font-weight:700}
+.quick button i{display:block;font-style:normal;font-size:28px;margin-bottom:2px}.quick button:hover{border-color:var(--clay)}
+.steps{display:flex;flex-direction:column;gap:8px}
+.step{display:flex;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer;text-align:left;width:100%}
+.step .dot{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:var(--line);flex-shrink:0}.step.done .dot{background:var(--pine);color:#fff}
+.bars .b{display:grid;grid-template-columns:110px 1fr 64px;gap:8px;align-items:center;margin:6px 0;font-size:15px}
+.bars .track{height:14px;background:var(--line);border-radius:8px;overflow:hidden}.bars .fill{height:100%;background:var(--pine)}.bars .fill.neg{background:var(--danger)}
+.nav-ic{display:none}
+@media(max-width:900px){
+  html{font-size:16px}
+  .layout{display:block}
+  .brand,header.top p{display:none}
+  aside{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:20;width:auto;height:auto;padding:6px 6px calc(6px + env(safe-area-inset-bottom));border-right:0;border-top:1px solid var(--line);border-bottom:0}
+  nav{flex-direction:row;overflow-x:auto;gap:4px;scrollbar-width:none}nav::-webkit-scrollbar{display:none}
+  nav button{flex:0 0 auto;min-width:68px;text-align:center;padding:6px 8px;font-size:13px;border-radius:12px}
+  .nav-ic{display:block;font-size:20px;line-height:1.2}
+  header.top{padding:calc(10px + env(safe-area-inset-top)) 14px 10px}
+  main{padding:16px 14px calc(96px + env(safe-area-inset-bottom))}
+  footer{padding:0 14px calc(90px + env(safe-area-inset-bottom))}
+  h1{font-size:24px}
+  .kpis,.quick{grid-template-columns:repeat(2,1fr)}
+  .btn{padding:12px 16px}.btn.sm{padding:9px 12px}
+  input[type=text],input[type=password],input[type=number],select,textarea{font-size:16px}
+  .video{flex-direction:column}.thumb{width:100%;aspect-ratio:16/9}
+  .bars .b{grid-template-columns:80px 1fr 56px}
+  .g2,.g3{grid-template-columns:1fr}.g6{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside>
+    <div class="brand"><span class="logo">딸</span><span><b>딸깍 스튜디오</b><span>쇼츠 · 글 · 카드</span></span></div>
+    <nav id="nav"></nav>
+  </aside>
+  <div class="main">
+    <header class="top">
+      <p>한 번 누르면 쇼츠 대본, 스레드 글, 카드뉴스가 준비됩니다.</p>
+      <div class="mode"><span id="aiLabel"></span><button class="btn sm" id="modeBtn"></button></div>
+    </header>
+    <main id="view"></main>
+    <footer>영상 파일은 받지 않습니다. 자막 지우기, 음악 지우기도 하지 않습니다. 다른 앱 영상은 주소만 직접 붙여 넣으세요. 키와 글은 이 브라우저 안에만 저장됩니다.</footer>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   딸깍 스튜디오 — 다시 만든 버전 (빌드 없이 index.html 하나로 동작)
+   1) 상수·유틸  2) 금지어 검사  3) AI 호출  4) 예시(체험) 데이터
+   5) 생성기  6) 유튜브 검색·점수  7) 저장소  8) 화면
+   ============================================================ */
+
+/* ---------- 1) 상수·유틸 ---------- */
+const PARTNERS_NOTE = "이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.";
+const FORTUNE_NOTE = "이 내용은 재미로 보는 운세입니다. 미래를 맞히는 것이 아니고, 재물·건강·연애의 결과를 약속하지 않습니다. 건강이 걱정되면 전문가와 상담하세요.";
+const SYSTEM_PROMPT = `당신은 한국 40~60대 손님을 위한 쇼핑 콘텐츠 작가입니다.
+건강기능식품과 일반 광고에서 금지되는 단정은 쓰지 않습니다.
+치료, 완치, 예방, 특효, 100%, 부작용 없음, 최고, 1위, 무조건, 기적, 즉효, 효과 보장이라는 말은 쓰지 않습니다.
+효과를 단정하지 말고 "도움이 될 수 있어요", "꾸준히 챙기는 분들이 많아요"처럼 순하게 씁니다.
+출력은 설명 없이 JSON 하나만 보냅니다.`;
+
+const PAGES = [
+  ["dashboard", "대시보드", "대시보드"],
+  ["ranking", "쇼츠 랭킹", "쇼츠 레퍼런스 랭킹"],
+  ["script", "대본 생성", "대본 생성기"],
+  ["threads", "스레드 글", "스레드 글 공장"],
+  ["cards", "카드뉴스", "카드뉴스 생성기"],
+  ["fortune", "운세 쇼츠", "운세 쇼츠 생성기"],
+  ["studio", "쇼츠 설계", "AI 쇼츠 설계실"],
+  ["margin", "마진 계산기", "마진 계산기"],
+  ["settings", "설정", "설정"],
+];
+const ICONS = { dashboard: "🏠", ranking: "📈", script: "🎬", threads: "🧵", cards: "🖼️", fortune: "🔮", studio: "🎛️", margin: "🧮", settings: "⚙️" };
+const PERIODS = [["48h", "48시간", 48], ["7d", "7일", 168], ["30d", "30일", 720], ["90d", "90일", 2160]];
+const SORTS = [["viewsPerHour", "속도순"], ["engagement", "참여순"], ["viewsToSubscriber", "구독자 대비"], ["views", "조회수순"]];
+const ANIMALS = ["쥐", "소", "호랑이", "토끼", "용", "뱀", "말", "양", "원숭이", "닭", "개", "돼지"];
+const FORTUNE_TOPICS = ["재물", "건강", "연애", "총운"];
+const FORTUNE_CUTS = [[3, "3컷 · 약 27초"], [4, "4컷 · 약 36초"], [5, "5컷 · 약 45초"]];
+const CARD_THEMES = {
+  warm:  { label: "따뜻한 종이", bg: "#F6E7D4", bg2: "#E7C8A4", ink: "#2A2118", muted: "#5C4A3A", accent: "#C4511A", chip: "#FFF8EF", footer: "#7A6454" },
+  navy:  { label: "밤색 간판",   bg: "#1A2C40", bg2: "#2E4A68", ink: "#F7F1E6", muted: "#E4D5C0", accent: "#E2B15A", chip: "#24384F", footer: "#C4B39A" },
+  green: { label: "숲속 메모",   bg: "#E5F0E4", bg2: "#B7D2B4", ink: "#163528", muted: "#2C4A3A", accent: "#1F6B45", chip: "#F5FBF4", footer: "#4E6B5A" },
+};
+const THRESH = { rising: 500, goodEngagement: 0.04, breakout: 2 };
+const CARD_W = 1080, CARD_H = 1350;
+const CANVAS_FONT = '"Malgun Gothic","Apple SD Gothic Neo","Noto Sans CJK KR","Noto Sans KR",sans-serif';
+
+const $ = (sel, root = document) => root.querySelector(sel);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const uid = (p = "id") => `${p}-${Math.random().toString(36).slice(2, 8)}${Date.now().toString(36).slice(-3)}`;
+const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
+const str = (v, d = "") => (typeof v === "string" ? v.trim() : d);
+const strArr = (v) => (Array.isArray(v) ? v.map((x) => str(x)).filter(Boolean) : []);
+const obj = (v) => (v && typeof v === "object" && !Array.isArray(v) ? v : {});
+const tagify = (arr) => strArr(arr).map((t) => (t.startsWith("#") ? t : `#${t}`));
+const num = (v) => { const n = Number(v ?? 0); return Number.isFinite(n) ? n : 0; };
+const fmtNum = (n) => Math.abs(n) >= 1e4 ? `${(n / 1e4).toFixed(Math.abs(n / 1e4) >= 100 ? 0 : 1)}만` : Math.round(n).toLocaleString("ko-KR");
+const fmtPct = (n) => `${(n * 100).toFixed(1)}%`;
+const fmtWon = (n) => `${Math.round(n).toLocaleString("ko-KR")}원`;
+const fmtAge = (h) => (!Number.isFinite(h) || h < 48 ? `${Math.max(1, Math.round(h || 1))}시간 전` : `${Math.max(1, Math.round(h / 24))}일 전`);
+
+function withNote(text, hasLink) {
+  if (!hasLink || text.includes("쿠팡 파트너스 활동의 일환")) return text;
+  const t = text.trim();
+  return t ? `${t}\n\n${PARTNERS_NOTE}` : PARTNERS_NOTE;
+}
+
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch { return false; }
+}
+function download(blob, name) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+let toastTimer;
+function toast(msg) {
+  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+}
+
+/* ---------- 2) 금지어 검사 ---------- */
+const DEFAULT_BANNED = ["부작용이 없", "부작용 없어요", "부작용 없음", "즉각적인 효과", "의학적 효과", "완전 치유", "질병 치료", "의사 추천", "유일무이", "살 빠짐", "특효약", "100%", "완치", "완쾌", "특효", "즉효", "예방", "치료", "항암", "최고", "1위", "무조건", "기적", "약효", "효과 보장", "보장합니다"];
+const SOFT = { "부작용이 없": "개인차가 있", "부작용 없어요": "사람마다 달라요", "부작용 없음": "개인차가 있음", "즉각적인 효과": "꾸준한 습관", "의학적 효과": "생활 습관", "완전 치유": "마음 관리", "질병 치료": "컨디션 관리", "의사 추천": "주변 이야기", "유일무이": "흔치 않은", "살 빠짐": "체중 관리", "특효약": "건강식품", "100%": "상당수", "완치": "회복 느낌", "완쾌": "개운함", "특효": "화제", "즉효": "빠른 체감", "예방": "관리", "치료": "케어", "항암": "몸 관리", "최고": "인기", "1위": "상위", "무조건": "일단", "기적": "변화", "약효": "체감", "효과 보장": "바람", "보장합니다": "기대할 수 있어요" };
+/* 고치지 않는 키: 주소·날짜·상태처럼 글이 아닌 값 */
+const SKIP_KEYS = new Set(["example", "createdAt", "id", "url", "link", "thumbnail", "savedAt", "status", "token", "provider", "referenceUrl", "channelId", "publishedAt", "platformLabel", "source", "disclaimer"]);
+
+function isNoticeText(t) { return t.includes("쿠팡 파트너스 활동의 일환") || t.includes("재미로 보는 운세"); }
+function dedupeWords(list) {
+  const seen = new Set(), out = [];
+  for (const w of list) { const t = w.trim(); if (t && !seen.has(t)) { seen.add(t); out.push(t); } }
+  return out;
+}
+/* 긴 단어부터 찾고 겹치지 않게. "100%"가 "1100%" 안에서 걸리는 것은 피한다. */
+function findBanned(text, words) {
+  const sorted = dedupeWords(words).sort((a, b) => b.length - a.length || a.localeCompare(b));
+  const used = new Array(text.length).fill(false), hits = [];
+  for (const w of sorted) {
+    let from = 0;
+    while (from <= text.length - w.length) {
+      const i = text.indexOf(w, from);
+      if (i < 0) break;
+      const end = i + w.length;
+      const before = text[i - 1], after = text[end];
+      const numericGuard = (/^\d/.test(w) && before && /\d/.test(before)) || (/%$/.test(w) && after && /\d/.test(after));
+      if (!used.slice(i, end).some(Boolean) && !numericGuard) {
+        for (let k = i; k < end; k++) used[k] = true;
+        hits.push({ word: w, index: i, length: w.length });
+      }
+      from = i + 1;
+    }
+  }
+  return hits.sort((a, b) => a.index - b.index);
+}
+function softenText(text, words) {
+  if (isNoticeText(text)) return text;
+  const hits = findBanned(text, words);
+  if (!hits.length) return text;
+  let out = "", pos = 0;
+  for (const h of hits) { out += text.slice(pos, h.index) + (SOFT[h.word] ?? "○○"); pos = h.index + h.length; }
+  out += text.slice(pos);
+  return out.replace(/[ \t]{2,}/g, " ").replace(/[ \t]+\n/g, "\n");
+}
+function softenDeep(value, words, key) {
+  if (key && SKIP_KEYS.has(key)) return value;
+  if (typeof value === "string") return softenText(value, words);
+  if (Array.isArray(value)) return value.map((v) => softenDeep(v, words));
+  if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, softenDeep(v, words, k)]));
+  return value;
+}
+function highlightBanned(text, words) {
+  const hits = findBanned(text, words);
+  if (!hits.length) return esc(text);
+  let out = "", pos = 0;
+  for (const h of hits) { out += esc(text.slice(pos, h.index)) + `<mark class="bad">${esc(text.slice(h.index, h.index + h.length))}</mark>`; pos = h.index + h.length; }
+  return out + esc(text.slice(pos));
+}
+
+/* ---------- 3) AI 호출 (브라우저에서 직접) ---------- */
+const PROVIDERS = { claude: "클로드", openai: "오픈AI", gemini: "제미나이" };
+const providerKey = (s) => ({ claude: s.claudeKey, openai: s.openaiKey, gemini: s.geminiKey }[s.provider] || "").trim();
+const blockedError = (p) => new Error(`${PROVIDERS[p]} 서버에 브라우저에서 직접 연결하지 못했습니다. 제미나이나 클로드로 바꾸거나, 체험 모드를 켜 보세요.`);
+async function apiError(res, p) {
+  const j = await res.json().catch(() => ({}));
+  const e = j.error;
+  return new Error((typeof e === "string" ? e : e?.message) || j.message || `${PROVIDERS[p]} 오류 (${res.status})`);
+}
+async function callClaude(key, system, user, max) {
+  let res;
+  try {
+    res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+      body: JSON.stringify({ model: "claude-sonnet-4-5", max_tokens: max, system, messages: [{ role: "user", content: user }] }),
+    });
+  } catch { throw blockedError("claude"); }
+  if (!res.ok) throw await apiError(res, "claude");
+  const t = ((await res.json()).content ?? []).map((m) => m.text ?? "").join("").trim();
+  if (!t) throw new Error("클로드가 빈 답을 보냈습니다. 한 번 더 눌러 주세요.");
+  return t;
+}
+async function callOpenAI(key, system, user, max) {
+  let res;
+  try {
+    res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
+      body: JSON.stringify({ model: "gpt-4o-mini", temperature: 0.8, max_tokens: max, response_format: { type: "json_object" }, messages: [{ role: "system", content: system }, { role: "user", content: user }] }),
+    });
+  } catch { throw blockedError("openai"); }
+  if (!res.ok) throw await apiError(res, "openai");
+  const t = ((await res.json()).choices?.[0]?.message?.content ?? "").trim();
+  if (!t) throw new Error("오픈AI가 빈 답을 보냈습니다. 한 번 더 눌러 주세요.");
+  return t;
+}
+async function callGemini(key, system, user, max) {
+  let res;
+  try {
+    res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents: [{ role: "user", parts: [{ text: user }] }], generationConfig: { temperature: 0.8, maxOutputTokens: max } }),
+    });
+  } catch { throw blockedError("gemini"); }
+  if (!res.ok) throw await apiError(res, "gemini");
+  const t = ((await res.json()).candidates?.[0]?.content?.parts ?? []).map((p) => p.text ?? "").join("").trim();
+  if (!t) throw new Error("제미나이가 빈 답을 보냈습니다. 한 번 더 눌러 주세요.");
+  return t;
+}
+function extractJson(text) {
+  const t = text.trim();
+  const fence = t.match(/```(?:json)?\s*([\s\S]*?)```/);
+  const body = fence ? fence[1].trim() : t;
+  const a = body.indexOf("{"), b = body.lastIndexOf("}");
+  if (a < 0 || b < a) throw new Error("JSON을 찾지 못했습니다.");
+  return JSON.parse(body.slice(a, b + 1));
+}
+async function askJson(settings, prompt, max = 8000) {
+  const key = providerKey(settings);
+  if (!key) throw new Error("API 키가 없습니다. 설정에서 키를 넣거나, 체험 모드를 켜 주세요.");
+  const fn = { claude: callClaude, openai: callOpenAI, gemini: callGemini }[settings.provider];
+  const raw = await fn(key, SYSTEM_PROMPT, prompt, max);
+  try { return extractJson(raw); } catch { throw new Error("답변을 읽지 못했습니다. 한 번 더 눌러 주세요."); }
+}
+const bannedLine = (w) => (w.length ? `쓰지 말 단어: ${w.join(", ")}.` : "단정하는 광고 문구를 쓰지 마세요.");
+const useRealAI = (s) => !s.demoMode && !!providerKey(s);
+
+/* 글 하나 / 결과 전체를 안전하게 고친다. AI가 되면 AI, 아니면 규칙으로. */
+async function safeText(text, s) {
+  if (!useRealAI(s)) return { text: softenText(text, s.bannedWords), mode: "rules" };
+  try {
+    const r = obj(await askJson(s, `다음 문장에서 금지 표현만 빼고 뜻을 살려 다시 쓰세요. ${bannedLine(s.bannedWords)} JSON 형식은 {"text":"고친 문장"} 입니다.\n원문:\n${text}`, 2000));
+    return { text: softenText(str(r.text, text) || text, s.bannedWords), mode: "llm" };
+  } catch { return { text: softenText(text, s.bannedWords), mode: "rules" }; }
+}
+async function safeDeep(value, s) {
+  if (!useRealAI(s)) return { value: softenDeep(value, s.bannedWords), mode: "rules" };
+  try {
+    const r = await askJson(s, `아래 JSON의 문자열에서 금지 표현만 고치세요. 키 이름과 구조는 유지하세요. 링크 주소는 바꾸지 마세요. ${bannedLine(s.bannedWords)}\n${JSON.stringify(value)}`, 8000);
+    return { value: softenDeep(r, s.bannedWords), mode: "llm" };
+  } catch { return { value: softenDeep(value, s.bannedWords), mode: "rules" }; }
+}
+
+/* ---------- 4) 예시(체험 모드) 데이터 ---------- */
+const DEMO_VIDEOS = [
+  ["아침 물 한 잔에 타는 사람 늘었어요", "식탁연구소", 18000, 860000, 24000, 3100, 30, 38],
+  ["무릎이 시큰할 때 식단에 올린 것 3가지", "엄마표살림", 250000, 120000, 9000, 800, 200, 47],
+  ["오늘 저녁 집밥 반찬 하나", "큰채널요리", 500000, 40000, 500, 40, 400, 29],
+  ["구독자 적은 채널의 실리콘 조리도구", "살림한줌", 800, 22000, 400, 30, 10, 24],
+  ["댓글이 길게 달린 루테인 비교", "눈건강노트", 90000, 15000, 1800, 420, 80, 52],
+  ["방금 올린 작은 후기", "시작채널", 1200, 900, 20, 2, 5, 18],
+  ["구독자 비공개 채널의 유산균 쇼츠", "장건강일기", null, 300000, 20000, 1500, 20, 41],
+  ["작은 채널 오메가3, 댓글은 많고 속도는 보통", "하루한포", 300, 5400, 900, 210, 60, 33],
+];
+function scoreVideo(v, now = new Date()) {
+  const age = Math.max((now - Date.parse(v.publishedAt)) / 36e5 || 1 / 60, 1 / 60);
+  const viewsPerHour = Math.max(0, v.views) / age;
+  const engagement = v.views > 0 ? (Math.max(0, v.likes) + Math.max(0, v.comments)) / v.views : 0;
+  const viewsToSubscriber = v.subscribers && v.subscribers > 0 ? Math.max(0, v.views) / v.subscribers : null;
+  const rising = viewsPerHour >= THRESH.rising, good = engagement >= THRESH.goodEngagement, breakout = viewsToSubscriber !== null && viewsToSubscriber >= THRESH.breakout;
+  const tags = [];
+  if (rising) tags.push("급상승");
+  if (good) tags.push("반응 좋음");
+  if (breakout) tags.push("구독자 대비 대박");
+  if (rising && (good || breakout)) tags.push("진짜 봐야 할 영상");
+  return { viewsPerHour, engagement, viewsToSubscriber, tags, ageHours: age };
+}
+function demoVideos(keyword, now = new Date()) {
+  const k = keyword.trim() || "콜라겐";
+  return DEMO_VIDEOS.map(([title, channel, subscribers, views, likes, comments, hours, durationSec], i) => {
+    const v = { id: `demo-${i}`, example: true, source: "demo", platformLabel: "유튜브 쇼츠", title: `${k} · ${title}`, channel, channelId: "", url: "", thumbnail: "", subscribers, views, likes, comments, durationSec, memo: "", publishedAt: new Date(now - hours * 36e5).toISOString() };
+    return { ...v, ...scoreVideo(v, now) };
+  });
+}
+function demoScript(f) {
+  const name = f.productName.trim() || "콜라겐", price = f.price.trim(), target = f.target.trim() || "40~60대";
+  const mk = (t, s, v, i) => ({ seconds: t, narration: s, visualKo: v, klingPrompt: `${i}, realistic Korean home, vertical 9:16, no text`, higgsfieldPrompt: `${i}, soft natural light, vertical 9:16, no text, no logo` });
+  const variants = [
+    { style: "공감형", hook: "아침마다 몸이 무거워서, 물 한 잔부터 바꿨어요.", body: `${name}를 물에 타 먹는 방법만 알려 드릴게요. ${f.features || "먹기 편한 구성"}.`, cta: "궁금하면 댓글에 제품명을 남겨 주세요. 링크는 고정 댓글에 있어요.", durationSec: 36,
+      scenes: [mk("0-5초", "아침마다 몸이 무거워서, 물 한 잔부터 바꿨어요.", "창가 식탁, 빈 컵", "Morning kitchen table, empty glass"), mk("5-15초", `${name}, 한 포만 뜯어서 준비해요.`, "포장 앞면을 손에 든 장면", "Hand holding a sachet"), mk("15-28초", price ? `가격은 ${price}. 상품 페이지에서 확인하세요.` : "가격은 상품 페이지에서 확인하세요.", "미지근한 물에 타는 클로즈업", "Powder dissolving in warm water"), mk("28-36초", "댓글로 안내해 드릴게요.", "컵을 드는 손", "Hand lifting a cup")] },
+    { style: "숫자형", hook: "물 200ml, 스틱 1포, 시간 10초.", body: `${target}이 아침에 챙기기 쉬운 구성이에요. 효과는 단정하지 않고 방법만 말해요.`, cta: "고정 댓글에 비교 링크를 적어 두었습니다.", durationSec: 34,
+      scenes: [mk("0-4초", "물 200ml, 스틱 1포, 시간 10초.", "컵과 스틱만", "Cup and stick on wood"), mk("4-16초", "포를 뜯고 물에 텁니다.", "손 클로즈업", "Hands tearing sachet"), mk("16-28초", "가격과 구성을 짧게 말합니다.", "30포 상자", "Box of 30 sachets"), mk("28-34초", "고정 댓글을 봐 달라고 말합니다.", "컵을 내려놓는 손", "Cup set down")] },
+    { style: "질문형", hook: "부모님 식탁에 뭐부터 올리세요?", body: "고른 이유를 특징 위주로 말하고, 광고처럼 확정하는 말은 피합니다.", cta: "댓글에 지금 드시는 걸 적어 주셔도 좋아요.", durationSec: 42,
+      scenes: [mk("0-6초", "부모님 식탁에 뭐부터 올리세요?", "두 개의 컵", "Two cups on a table"), mk("6-18초", "고른 이유를 특징 위주로 말합니다.", "스틱과 물", "Stick and water"), mk("18-32초", "단정하는 광고 문구는 피한다고 말합니다.", "미소 짓는 얼굴", "Calm talking head"), mk("32-42초", "댓글로 대화를 엽니다.", "화면을 보는 시선", "Looking just off camera")] },
+  ];
+  variants[2].body += " 이 제품이 최고라고는 말하지 않아요. 무조건 좋다는 말도 안 해요.";
+  return {
+    productName: name, variants, example: true, createdAt: new Date().toISOString(),
+    titles: [`${name}, 아침 물 한 잔이 달라진 이유`, `${name} 30포, 식탁 위에 둔 이유`, `부모님 식탁에 올리는 ${name}`, `가격 ${price || "확인"}, 내가 고른 기준`, `${name} 루틴 정리`],
+    hashtags: ["#아침루틴", "#살림템", "#50대", "#쇼핑쇼츠", "#쿠팡파트너스"],
+    pinnedComment: withNote(f.link ? `영상에서 말한 링크예요.\n${f.link}` : "링크를 아직 붙이지 않았어요.", !!f.link.trim()),
+  };
+}
+function demoThreads(f, n) {
+  const seeds = ["아침 공복은 아니고, 물 한 잔 다음에 타 먹어.", "거창하게 시작 안 해. 스틱 하나만 식탁에 둠.", "엄마랑 같이 먹으려고 하나 더 시켰어.", "광고처럼 확정해서 말 안 할게. 내 루틴만 적음.", "문장 짧게 끊어서 씀."];
+  const link = f.link.trim();
+  return Array.from({ length: n }, (_, i) => withNote([seeds[i % seeds.length], `주제는 ${f.topic.trim() || "오늘의 살림"}.`, "숫자 하나, 물 200ml.", link ? "링크는 맨 아래에만 둠." : "링크는 아직 없음.", link || "필요하면 댓글로 물어볼게."].join("\n"), !!link));
+}
+function demoCards(f) {
+  const t = f.topic.trim() || "아침 루틴", link = f.link.trim();
+  return {
+    topic: t, template: f.template, example: true, createdAt: new Date().toISOString(),
+    slides: [["표지", t, "거창한 결심 말고\n오늘 하나만 바꿔 봐요."], ["상황", "아침이 바쁘다면", "재고, 섞고, 설거지까지\n길어지면 작심삼일입니다."], ["방법", "스틱 하나", "포를 뜯어 미지근한 물에.\n시간으로 치면 10초예요."], ["맛", "맛은 거의 없어요", "향을 기대하기보다\n맹물에 가깝다고 생각하세요."], ["누구", "이런 분께", "부모님 식탁에\n하나 올려 두고 싶은 분."], ["가격", "가격도 같이 보세요", "한 달 30포 기준으로\n2만 원대를 많이 비교해요."], ["댓글", "댓글 단어", "콜라겐\n이라고 남기면 링크를 답글로 드려요."]].map(([kicker, title, body]) => ({ kicker, title, body })),
+    caption: withNote(`${t}\n사진은 직접 찍은 것만 써 주세요.\n댓글에 콜라겐 이라고 남겨 주세요.`, !!link),
+    hashtags: ["#카드뉴스", "#아침루틴", "#살림", "#40대", "#50대"], commentKeyword: "콜라겐",
+    dmReply: withNote(link ? `요청하신 링크예요.\n${link}` : "링크를 아직 붙이지 않았어요. 상품 주소를 넣은 뒤 다시 만들어 주세요.", !!link),
+  };
+}
+const FORTUNE_LINES = {
+  재물: ["지갑을 정리하는 주간이에요. 작은 지출부터 적어 보세요.", "급하게 큰돈을 기대하기보다, 이번 주는 새는 돈을 막는 쪽이에요.", "오래 미룬 장보기 목록을 줄이면 마음이 가벼워져요.", "누군가의 추천만 믿고 결제하지 마세요. 하루만 더 비교해 보세요.", "용돈 공책을 다시 꺼내면 흐름이 보여요."],
+  건강: ["오늘은 새로운 약속보다 잠이 먼저예요.", "물을 자주 마시고, 식사는 평소 양으로 충분해요.", "무릎이 뻐근하면 오래 앉지 말고 잠깐 걸어 보세요.", "영양제는 기적이 아니에요. 식단이 먼저예요.", "피곤이 길어지면 재미 운세 말고 전문가와 이야기하세요."],
+  연애: ["먼저 안부를 묻는 쪽이 유리한 날이에요.", "긴 설명보다 짧은 대답이 마음을 편하게 해요.", "오래된 친구에게 먼저 연락해 보세요.", "서운한 말을 밤중에 보내지 마세요.", "같이 걷는 약속이 식사 약속보다 잘 맞아요."],
+  총운: ["오전은 정리, 오후는 사람 만나기가 좋아요.", "한 가지만 끝내도 충분한 날이에요.", "새로운 시작은 작게. 큰 결심은 다음 주로 미뤄도 돼요.", "말수를 조금 줄이면 오해가 줄어요.", "익숙한 길이 오늘은 더 안전해요."],
+};
+function demoFortune(f) {
+  const lines = FORTUNE_LINES[f.topic], n = clamp(f.cuts, 3, 5);
+  let seed = 0; for (const ch of `${f.animal}-${f.topic}-${n}`) seed = (seed * 33 + ch.charCodeAt(0)) >>> 0;
+  return {
+    animal: f.animal, topic: f.topic, title: `${f.animal}띠 ${f.topic} 운세 ${n}컷`, disclaimer: FORTUNE_NOTE, example: true, createdAt: new Date().toISOString(),
+    cuts: Array.from({ length: n }, (_, i) => {
+      const line = lines[(seed + i) % lines.length];
+      return { dialogue: `${f.animal}띠, ${line}`.slice(0, 70), narration: `${f.animal}띠 ${f.topic} 이야기 ${i + 1}번. ${line} 재미로만 들으세요.`,
+        imagePrompt: `Cute illustrated ${f.animal} zodiac character, warm paper background, Korean home, gentle colors, no text, vertical 9:16, scene ${i + 1} about daily life`,
+        videoPrompt: "Slow gentle camera move, cute zodiac character nodding, warm light, no text, vertical 9:16, 4 seconds" };
+    }),
+  };
+}
+function demoStudio(f) {
+  const topic = f.topic.trim() || "오늘의 쇼츠", product = f.product.trim(), link = f.link.trim(), name = product || topic;
+  const sc = (no, time, narration, visualKo, imagePrompt, videoPrompt) => ({ no, time, narration, visualKo, imagePrompt, videoPrompt });
+  const scenes = [
+    sc(1, "0-4초", `${topic}, 오늘 영상은 여기서 시작해요.`, "식탁 전경, 손만 나오게", "Bright Korean kitchen table, morning light, empty glass, no text, vertical 9:16", "Slow push-in on a kitchen table, morning light, vertical 9:16, no text"),
+    sc(2, "4-14초", product ? `${product}를 고른 이유를 특징만 말해요.` : "무엇을 보여 줄지 한 문장으로 말해요.", "제품 또는 재료 클로즈업", "Close-up of a plain sachet and warm water, realistic, no logo, no text, vertical 9:16", "Hands pouring powder into water, realistic, vertical 9:16, no text"),
+    sc(3, "14-28초", "효과는 단정하지 않고, 먹는 방법과 가격만 안내해요.", "컵을 들고 창가를 보는 장면", "Korean woman in her 50s holding a glass by the window, natural, no text, vertical 9:16", "Woman takes a sip and looks outside, calm, vertical 9:16, no text"),
+    sc(4, "28-38초", "댓글과 고정 댓글로 안내하고 끝나요.", "컵을 내려놓고 미소", "Glass set on a wooden table, soft smile in background, no text, vertical 9:16", "Glass placed on table, fade on hands, vertical 9:16, no text"),
+  ];
+  const hook = `${name}, 거창하게 시작하지 마세요.`, body = "첫 장면은 상황, 가운데는 사용 방법, 끝은 댓글 안내. 치료나 1위 같은 말은 넣지 않습니다.", cta = "고정 댓글과 화면 자막을 같은 말로 맞추세요.";
+  return { topic, title: `${name} 쇼츠 설계`, thumbnailText: "물 한 잔", hashtags: ["#쇼츠", "#살림", "#루틴", "#40대", "#50대"], hook, body, cta, ttsText: [hook, body, cta, ...scenes.map((s) => s.narration)].join(" "), comment: withNote(link ? `영상에서 말한 제품 링크예요.\n${link}` : "링크가 없으면 이 줄은 비워 두세요.", !!link), scenes, example: true, createdAt: new Date().toISOString() };
+}
+
+/* ---------- 5) 생성기 (체험 모드면 예시, 아니면 AI) ---------- */
+async function genScript(f, s) {
+  if (s.demoMode) return demoScript(f);
+  const ref = f.referenceTitle ? `참고 영상 제목: ${f.referenceTitle}\n주소: ${f.referenceUrl}\n메모: ${f.referenceNote}` : "참고 영상 없음. 일반적인 쇼핑 쇼츠 구조로 쓰세요.";
+  const j = obj(await askJson(s, `${bannedLine(s.bannedWords)}
+40~60대가 보는 한국어 쇼츠 대본 3개를 만드세요. 각 대본은 30~45초, 훅/본문/CTA.
+장면마다 한국어 촬영 지시와 영어 Kling 프롬프트, 영어 Higgsfield 프롬프트.
+제목 5개, 해시태그, 고정 댓글. 링크가 있으면 고정 댓글에 쿠팡 파트너스 대가성 문구를 넣으세요.
+문구: ${PARTNERS_NOTE}
+JSON 키: variants[{style,hook,body,cta,durationSec,scenes[{seconds,narration,visualKo,klingPrompt,higgsfieldPrompt}]}], titles, hashtags, pinnedComment
+상품명: ${f.productName}
+특징: ${f.features}
+대상: ${f.target}
+가격: ${f.price}
+링크: ${f.link || "없음"}
+${ref}`));
+  const raw = Array.isArray(j.variants) ? j.variants : [];
+  if (!raw.length) throw new Error("대본이 비어 있습니다. 한 번 더 눌러 주세요.");
+  const styles = ["공감형", "숫자형", "질문형"];
+  const variants = raw.slice(0, 3).map((v0, i) => {
+    const v = obj(v0), sc = Array.isArray(v.scenes) && v.scenes.length ? v.scenes : [{ narration: str(v.hook) }];
+    const dur = Number(v.durationSec);
+    return {
+      style: str(v.style, styles[i] ?? "안"), hook: str(v.hook, "첫 문장을 다시 만들어 주세요."), body: str(v.body, f.features || f.productName), cta: str(v.cta, "댓글로 궁금한 점을 남겨 주세요."), durationSec: dur >= 30 && dur <= 45 ? dur : 38,
+      scenes: sc.map((x0, k) => { const x = obj(x0); return { seconds: str(x.seconds, `${k * 8}-${k * 8 + 8}초`), narration: str(x.narration, `${k + 1}번 장면 대사`), visualKo: str(x.visualKo, "식탁과 손"), klingPrompt: str(x.klingPrompt, "Realistic Korean kitchen, morning light, vertical 9:16, no text"), higgsfieldPrompt: str(x.higgsfieldPrompt, "Soft product photo on a wooden table, vertical 9:16, no text, no logo") }; }),
+    };
+  });
+  while (variants.length < 3) variants.push({ ...variants[0], style: styles[variants.length] });
+  const titles = strArr(j.titles); while (titles.length < 5) titles.push(`${f.productName || "상품"} 제목 ${titles.length + 1}`);
+  const tags = tagify(j.hashtags);
+  return { productName: f.productName.trim() || "상품", variants, titles: titles.slice(0, 5), hashtags: tags.length ? tags : ["#쇼핑쇼츠"], pinnedComment: withNote(str(j.pinnedComment, "고정 댓글입니다."), !!f.link.trim()), example: false, createdAt: new Date().toISOString() };
+}
+async function genThreads(f, s) {
+  const n = clamp(f.count, 1, 5);
+  if (s.demoMode) return demoThreads(f, n);
+  const j = obj(await askJson(s, `${bannedLine(s.bannedWords)}
+스레드 글 ${n}개를 반말로, 짧은 문장으로 쓰세요. AI 티 나는 말(결론, 정리하면)은 빼세요.
+한 글은 500자 안. 링크가 있으면 글 끝에만 넣고 대가성 문구를 붙이세요.
+JSON: {"drafts":["글1","글2"]}
+주제: ${f.topic}
+링크: ${f.link || "없음"}`));
+  const d = strArr(j.drafts).slice(0, n);
+  if (!d.length) throw new Error("글이 비어 있습니다. 한 번 더 눌러 주세요.");
+  while (d.length < n) d.push(d[d.length - 1]);
+  return d.map((t) => withNote(t, !!f.link.trim()));
+}
+async function genCards(f, s) {
+  if (s.demoMode) return demoCards(f);
+  const j = obj(await askJson(s, `${bannedLine(s.bannedWords)}
+인스타 카드뉴스 7장 문구를 만드세요. 1장은 표지, 7장은 댓글 유도.
+각 제목은 14자 안팎, 본문은 두 줄. 캡션, 해시태그, 댓글 키워드, DM 답장도 만드세요.
+링크가 있으면 캡션과 DM에 대가성 문구를 넣으세요.
+JSON: {"slides":[{"kicker":"","title":"","body":""}],"caption":"","hashtags":[],"commentKeyword":"","dmReply":""}
+주제: ${f.topic}
+링크: ${f.link || "없음"}`));
+  const topic = f.topic.trim() || "주제", has = !!f.link.trim();
+  const slides = (Array.isArray(j.slides) ? j.slides : []).slice(0, 7).map((x0, i) => { const x = obj(x0); return { kicker: str(x.kicker, `${i + 1}`), title: str(x.title, `${topic} ${i + 1}`), body: str(x.body, "한 줄 설명을 적어 주세요.") }; });
+  if (!slides.length) throw new Error("카드 문구가 비어 있습니다. 한 번 더 눌러 주세요.");
+  while (slides.length < 7) slides.push({ kicker: `${slides.length + 1}`, title: topic, body: "한 가지를 더 적어 주세요." });
+  return { topic, template: f.template, slides, caption: withNote(str(j.caption, topic), has), hashtags: tagify(j.hashtags), commentKeyword: str(j.commentKeyword, "링크"), dmReply: withNote(str(j.dmReply, "요청하신 내용이에요."), has), example: false, createdAt: new Date().toISOString() };
+}
+async function genFortune(f, s) {
+  const n = clamp(f.cuts, 3, 5);
+  if (s.demoMode) return demoFortune({ ...f, cuts: n });
+  const j = obj(await askJson(s, `재미용 운세 쇼츠 ${n}컷을 만드세요. 띠: ${f.animal}, 주제: ${f.topic}.
+각 컷은 대사 70자 안, 내레이션, 영어 이미지 프롬프트, 영어 영상 프롬프트.
+건강을 고쳐 준다는 말은 금지. 재물 확정 금지. JSON: {"title":"","cuts":[{"dialogue":"","narration":"","imagePrompt":"","videoPrompt":""}]}`));
+  const cuts = (Array.isArray(j.cuts) ? j.cuts : []).slice(0, n).map((c0, i) => { const c = obj(c0); return { dialogue: str(c.dialogue, `${f.animal}띠 ${i + 1}컷`), narration: str(c.narration, "재미로만 들으세요."), imagePrompt: str(c.imagePrompt, "Cute zodiac illustration, no text, vertical 9:16"), videoPrompt: str(c.videoPrompt, "Slow gentle motion, no text, vertical 9:16") }; });
+  if (!cuts.length) throw new Error("운세 대본이 비어 있습니다. 한 번 더 눌러 주세요.");
+  while (cuts.length < n) cuts.push({ ...cuts[cuts.length - 1] });
+  return { animal: f.animal, topic: f.topic, title: str(j.title, `${f.animal}띠 ${f.topic} 운세`), cuts, disclaimer: FORTUNE_NOTE, example: false, createdAt: new Date().toISOString() };
+}
+async function genStudio(f, s) {
+  if (s.demoMode) return demoStudio(f);
+  const j = obj(await askJson(s, `${bannedLine(s.bannedWords)}
+쇼츠 제작표 한 장을 만드세요. 대본(훅/본문/CTA), 장면 4개, 영어 이미지·영상 프롬프트, TTS용 낭독문, 썸네일 글자(8자 안팎), 제목, 해시태그, 고정 댓글.
+링크가 있으면 고정 댓글에 대가성 문구.
+JSON 키: title, thumbnailText, hashtags, hook, body, cta, ttsText, comment, scenes[{no,time,narration,visualKo,imagePrompt,videoPrompt}]
+주제: ${f.topic}
+상품: ${f.product || "없음"}
+링크: ${f.link || "없음"}`));
+  const scenes = (Array.isArray(j.scenes) ? j.scenes : []).slice(0, 8).map((x0, i) => { const x = obj(x0); return { no: i + 1, time: str(x.time, `${i * 8}초`), narration: str(x.narration, "장면 대사"), visualKo: str(x.visualKo, "식탁"), imagePrompt: str(x.imagePrompt, "Realistic vertical photo, no text, 9:16"), videoPrompt: str(x.videoPrompt, "Slow vertical video, no text, 9:16") }; });
+  if (!scenes.length) throw new Error("제작표가 비어 있습니다. 한 번 더 눌러 주세요.");
+  const hook = str(j.hook, f.topic), body = str(j.body, f.product || f.topic), cta = str(j.cta, "댓글을 봐 주세요.");
+  return { topic: f.topic.trim() || "쇼츠", title: str(j.title, f.topic), thumbnailText: str(j.thumbnailText, "오늘 하나"), hashtags: tagify(j.hashtags), hook, body, cta, ttsText: str(j.ttsText, [hook, body, cta].join(" ")), comment: withNote(str(j.comment, ""), !!f.link.trim()), scenes, example: false, createdAt: new Date().toISOString() };
+}
+
+/* SRT 자막: 장면 시간("5-15초")을 그대로 쓴다. 시간이 안 읽히면 장면당 8초. */
+function srtTime(sec) {
+  const ms = Math.round(sec * 1000), p = (n, l = 2) => String(n).padStart(l, "0");
+  return `${p(Math.floor(ms / 3600000))}:${p(Math.floor(ms / 60000) % 60)}:${p(Math.floor(ms / 1000) % 60)},${p(ms % 1000, 3)}`;
+}
+function buildSrt(scenes) {
+  let cursor = 0;
+  return scenes.map((sc, i) => {
+    const m = /(\d+(?:\.\d+)?)\s*[-~–]\s*(\d+(?:\.\d+)?)/.exec(sc.seconds || sc.time || "");
+    let a = m ? Number(m[1]) : cursor, b = m ? Number(m[2]) : cursor + 8;
+    if (b <= a) b = a + 8;
+    cursor = b;
+    return `${i + 1}\n${srtTime(a)} --> ${srtTime(b)}\n${sc.narration}\n`;
+  }).join("\n");
+}
+
+/* ---------- 6) 유튜브 검색 ---------- */
+function ytMessage(status, body) {
+  const m = String(body?.error?.message ?? ""), l = m.toLowerCase();
+  if (l.includes("quota")) return "오늘 유튜브 무료 검색 한도를 다 썼습니다. 내일 다시 검색해 주세요.";
+  if (status === 400 || l.includes("api key")) return "유튜브 키가 맞지 않습니다. 설정 화면을 확인해 주세요.";
+  if (status === 403 && l.includes("accessnotconfigured")) return "구글 클라우드에서 YouTube Data API v3를 켜 주세요.";
+  if (status === 403) return m || "유튜브가 이 키의 검색을 거절했습니다. 키 제한과 API 사용 설정을 봐 주세요.";
+  return m || `유튜브 검색에 실패했습니다. (${status})`;
+}
+async function ytGet(url) {
+  let res; try { res = await fetch(url); } catch { throw new Error("유튜브에 연결하지 못했습니다. 인터넷을 확인해 주세요."); }
+  const j = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(ytMessage(res.status, j));
+  return j;
+}
+function isoSeconds(d) {
+  const m = /^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/.exec(String(d).trim());
+  if (!m || (!m[1] && !m[2] && !m[3])) return null;
+  return Number(m[1] ?? 0) * 3600 + Number(m[2] ?? 0) * 60 + Number(m[3] ?? 0);
+}
+async function searchShorts({ key, keyword, period }) {
+  key = key.trim(); keyword = keyword.trim();
+  if (!key) throw new Error("유튜브 키가 없습니다. 설정에서 키를 넣거나 체험 모드를 켜 주세요.");
+  if (!keyword) throw new Error("검색어를 적어 주세요.");
+  const now = new Date(), hours = (PERIODS.find((p) => p[0] === period) ?? PERIODS[0])[2];
+  const u = new URL("https://www.googleapis.com/youtube/v3/search");
+  Object.entries({ part: "snippet", type: "video", videoDuration: "short", regionCode: "KR", relevanceLanguage: "ko", order: "viewCount", maxResults: "15", q: keyword, publishedAfter: new Date(now - hours * 36e5).toISOString(), key }).forEach(([k, v]) => u.searchParams.set(k, v));
+  const ids = ((await ytGet(u)).items ?? []).map((i) => i.id?.videoId).filter(Boolean);
+  if (!ids.length) return [];
+  const vu = new URL("https://www.googleapis.com/youtube/v3/videos");
+  vu.searchParams.set("part", "snippet,statistics,contentDetails"); vu.searchParams.set("id", ids.join(",")); vu.searchParams.set("key", key);
+  const items = (await ytGet(vu)).items ?? [];
+  const chIds = [...new Set(items.map((v) => v.snippet?.channelId).filter(Boolean))], subs = new Map();
+  if (chIds.length) {
+    const cu = new URL("https://www.googleapis.com/youtube/v3/channels");
+    cu.searchParams.set("part", "statistics"); cu.searchParams.set("id", chIds.join(",")); cu.searchParams.set("key", key);
+    for (const c of (await ytGet(cu)).items ?? []) subs.set(c.id, c.statistics?.hiddenSubscriberCount ? null : num(c.statistics?.subscriberCount));
+  }
+  const out = [];
+  for (const v of items) {
+    const dur = isoSeconds(v.contentDetails?.duration ?? "");
+    if (!(dur !== null && dur > 0 && dur <= 60)) continue;
+    const ch = v.snippet?.channelId ?? "", th = v.snippet?.thumbnails;
+    const base = { id: v.id, example: false, source: "youtube", platformLabel: "유튜브 쇼츠", title: v.snippet?.title ?? "(제목 없음)", channel: v.snippet?.channelTitle ?? "(채널 없음)", channelId: ch, url: `https://www.youtube.com/shorts/${v.id}`, thumbnail: th?.medium?.url || th?.high?.url || th?.default?.url || "", subscribers: subs.get(ch) ?? null, views: num(v.statistics?.viewCount), likes: num(v.statistics?.likeCount), comments: num(v.statistics?.commentCount), publishedAt: v.snippet?.publishedAt ?? now.toISOString(), durationSec: dur, memo: "" };
+    out.push({ ...base, ...scoreVideo(base, now) });
+  }
+  return out;
+}
+
+/* ---------- 7) 저장소 ---------- */
+const STORE_KEY = "ddalkkak-studio-v2";
+const defaultSettings = () => ({ demoMode: true, provider: "gemini", claudeKey: "", openaiKey: "", geminiKey: "", youtubeKey: "", bannedWords: [...DEFAULT_BANNED] });
+const defaultForms = () => ({
+  rankKeyword: "콜라겐", rankPeriod: "7d", rankSort: "viewsPerHour",
+  script: { productName: "저분자 피쉬콜라겐 스틱", features: "스틱 1포, 미지근한 물에 잘 녹음, 맛은 거의 없음, 한 달 30포", target: "40~60대, 아침 루틴을 쉽게 하고 싶은 분", price: "29,000원", link: "", referenceTitle: "", referenceUrl: "", referenceNote: "" },
+  threadTopic: "아침 콜라겐 루틴", threadCount: 3, threadLink: "https://example.com/coupang-partners-sample", threadAccount: "",
+  cardTopic: "아침 콜라겐 루틴", cardLink: "", cardTemplate: "warm",
+  fortuneAnimal: "용", fortuneTopic: "재물", fortuneCuts: 4,
+  studioTopic: "아침 물 한 잔 루틴", studioProduct: "", studioLink: "",
+});
+const defaultMargin = () => [
+  { name: "예시 상품 A", cost: 8000, price: 19900, shipping: 3000, fee: 12, ad: 1500, misc: 300, qty: 10 },
+  { name: "예시 상품 B", cost: 15000, price: 24900, shipping: 3000, fee: 12, ad: 2500, misc: 0, qty: 5 },
+];
+function freshState() {
+  return { version: 2, settings: defaultSettings(), forms: defaultForms(), collection: [], accounts: [{ id: "acc-1", name: "살림 계정", token: "" }], drafts: [], last: {}, margin: defaultMargin() };
+}
+function loadState() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+    if (raw && raw.version === 2) { const d = freshState(); return { ...d, ...raw, settings: { ...d.settings, ...raw.settings }, forms: { ...d.forms, ...raw.forms, script: { ...d.forms.script, ...raw.forms?.script } } }; }
+  } catch { /* 저장소를 못 읽으면 새로 시작 */ }
+  return freshState();
+}
+let state = loadState();
+let page = "dashboard";
+let ui = { videos: null, videosDemo: false, busy: "", error: "", info: "", cardPhotos: [], cardIdx: 0, rankTab: "" };
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch { toast("브라우저 저장 공간이 부족합니다. 설정에서 백업을 받아 두세요."); } }
+
+/* ---------- 8) 화면 ---------- */
+const view = $("#view");
+const cfg = () => state.settings;
+const F = () => state.forms;
+function setPage(p) { page = p; ui.error = ""; ui.info = ""; render(); window.scrollTo(0, 0); }
+function msgBlocks() {
+  return (ui.error ? `<div class="card err">${esc(ui.error)}</div>` : "") + (ui.info ? `<div class="card ok">${esc(ui.info)}</div>` : "");
+}
+const exampleNote = (r) => (r?.example ? `<div class="card warn"><b>예시 데이터입니다.</b> 실제 조회수나 게시물이 아닙니다.</div>` : "");
+const pageHead = (id, lead) => `<h1>${esc(PAGES.find((p) => p[0] === id)[2])}</h1><p class="lead">${esc(lead)}</p>`;
+const btn = (label, act, extra = "", cls = "") => `<button class="btn ${cls}" data-act="${act}" ${extra}>${esc(label)}</button>`;
+const choice = (items, cur, act) => items.map(([v, l]) => `<button class="btn sm ${String(cur) === String(v) ? "on" : "sec"}" data-act="${act}" data-v="${esc(v)}">${esc(l ?? v)}</button>`).join("");
+
+/* 고칠 수 있는 글칸: 금지어 표시 + 복사. data-path 는 state 안 경로. */
+function editable(label, value, path, { rows = 3 } = {}) {
+  const hits = findBanned(value, cfg().bannedWords);
+  return `<div class="field"><div class="head"><span>${esc(label)}</span><span>${btn("복사", "copy", `data-path="${esc(path)}"`, "sec sm")}</span></div>
+    <textarea rows="${rows}" data-bind="${esc(path)}">${esc(value)}</textarea>
+    ${hits.length ? `<div class="small" style="margin-top:4px;color:var(--danger)">조심할 말: ${hits.map((h) => esc(h.word)).join(", ")}</div><div class="pre small" style="margin-top:4px">${highlightBanned(value, cfg().bannedWords)}</div>` : ""}</div>`;
+}
+function getPath(root, path) { return path.split(".").reduce((o, k) => (o == null ? o : o[k]), root); }
+function setPath(root, path, val) { const ks = path.split("."), last = ks.pop(); const t = ks.reduce((o, k) => o[k], root); t[last] = val; }
+
+function render() {
+  $("#nav").innerHTML = PAGES.map(([id, label]) => `<button class="${id === page ? "on" : ""}" data-act="page" data-v="${id}"><span class="nav-ic">${ICONS[id]}</span>${esc(label)}</button>`).join("");
+  $("#aiLabel").textContent = cfg().demoMode ? "AI: 체험" : `AI: ${PROVIDERS[cfg().provider]}`;
+  const mb = $("#modeBtn"); mb.textContent = cfg().demoMode ? "체험 모드" : "실제 모드"; mb.className = "btn sm " + (cfg().demoMode ? "" : "pine"); mb.style.background = cfg().demoMode ? "#fde68a" : ""; mb.style.color = cfg().demoMode ? "#451a03" : "";
+  view.innerHTML = ({ dashboard: viewDashboard, ranking: viewRanking, script: viewScript, threads: viewThreads, cards: viewCards, fortune: viewFortune, studio: viewStudio, margin: viewMargin, settings: viewSettings })[page]();
+  if (page === "cards") drawCards();
+}
+
+/* --- 대시보드 (첫 화면) --- */
+function viewDashboard() {
+  const st = state, L = st.last, drafts = st.drafts;
+  const cnt = (k) => drafts.filter((d) => d.status === k).length;
+  const marginRows = st.margin.map((r) => ({ name: r.name || "이름 없음", ...calcMargin(r) }));
+  const marginSum = marginRows.reduce((a, r) => a + r.total, 0);
+  const kpi = (label, value, sub, to) => `<button class="kpi" data-act="page" data-v="${to}"><small>${label}</small><b>${value}</b><span>${sub}</span></button>`;
+  const steps = [
+    ["쇼츠 랭킹에서 잘 되는 영상 담기", st.collection.length > 0, "ranking", `${st.collection.length}개 담음`],
+    ["대본 3개 만들기", !!L.script, "script", L.script ? `${L.script.productName} · ${L.script.example ? "예시" : "실제"}` : "아직"],
+    ["스레드 초안 만들고 승인하기", cnt("approved") + cnt("published") + cnt("copied") > 0, "threads", `초안 ${cnt("draft")} · 승인 ${cnt("approved")} · 게시/복사 ${cnt("published") + cnt("copied")}`],
+    ["카드뉴스 7장 만들기", !!L.cards, "cards", L.cards ? L.cards.topic : "아직"],
+    ["운세 쇼츠·제작표 만들기", !!(L.fortune || L.studio), "fortune", `${L.fortune ? "운세 ✓ " : ""}${L.studio ? "제작표 ✓" : ""}` || "아직"],
+  ];
+  const doneN = steps.filter((x) => x[1]).length;
+  const needKey = !cfg().demoMode && !providerKey(cfg());
+  const recent = [
+    ...st.collection.slice(0, 3).map((v) => `<div class="small" style="padding:6px 0;border-bottom:1px solid var(--line)">🎞 ${esc(v.title)} <span class="muted">· ${esc(v.channel)}</span></div>`),
+    ...drafts.slice(0, 3).map((d) => `<div class="small" style="padding:6px 0;border-bottom:1px solid var(--line)">🧵 <span class="tag">${STATUS[d.status]}</span>${esc(d.text.split("\n")[0].slice(0, 40))}</div>`),
+  ].join("");
+  const maxAbs = Math.max(1, ...marginRows.map((r) => Math.abs(r.pct)));
+  return pageHead("dashboard", "오늘 만든 것과 다음 할 일을 한눈에 봅니다. 폰에서도 그대로 쓸 수 있어요.") +
+    (cfg().demoMode ? `<div class="card warn"><b>체험 모드입니다.</b> 지금 보이는 글과 숫자는 예시예요. 실제로 쓰려면 설정에서 키를 넣고 실제 모드로 바꾸세요. ${btn("설정 열기", "page", 'data-v="settings"', "sm sec")}</div>` : "") +
+    (needKey ? `<div class="card err">실제 모드인데 ${PROVIDERS[cfg().provider]} 키가 없습니다. 설정에서 키를 넣어 주세요.</div>` : "") +
+    `<div class="kpis">${kpi("담아 둔 영상", st.collection.length, "쇼츠 랭킹", "ranking")}${kpi("스레드 초안", drafts.length, `승인 ${cnt("approved")} · 게시 ${cnt("published")}`, "threads")}${kpi("오늘 진행", `${doneN}/${steps.length}`, "아래 순서대로", "dashboard")}${kpi("마진 합계", fmtWon(marginSum), `${marginRows.length}개 상품`, "margin")}</div>` +
+    `<h2>바로 가기</h2><div class="quick" style="margin-bottom:16px">${PAGES.filter((p) => !["dashboard", "settings"].includes(p[0])).map(([id, l]) => `<button data-act="page" data-v="${id}"><i>${ICONS[id]}</i>${esc(l)}</button>`).join("")}</div>` +
+    `<div class="grid g2"><div><h2>오늘 순서</h2><div class="steps">${steps.map(([t, done, to, sub], i) => `<button class="step ${done ? "done" : ""}" data-act="page" data-v="${to}"><span class="dot">${done ? "✓" : i + 1}</span><span><b>${esc(t)}</b><br><span class="muted small">${esc(sub)}</span></span></button>`).join("")}</div></div>
+    <div><h2>마진율</h2><div class="card bars">${marginRows.length ? marginRows.map((r) => `<div class="b"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.name)}</span><span class="track"><span class="fill ${r.pct < 0 ? "neg" : ""}" style="display:block;width:${Math.max(3, Math.abs(r.pct) / maxAbs * 100)}%"></span></span><b class="${r.pct >= 0 ? "pos" : "neg"}">${r.pct.toFixed(1)}%</b></div>`).join("") : '<span class="muted">마진 계산기에서 상품을 추가하세요.</span>'}</div>
+    <h2>최근 항목</h2><div class="card">${recent || '<span class="muted">아직 없습니다.</span>'}</div></div></div>` +
+    `<div class="card"><b>폰에 설치하기</b><p class="small muted" style="margin-top:4px">크롬은 메뉴 → "홈 화면에 추가", 아이폰 사파리는 공유 → "홈 화면에 추가"를 누르면 앱처럼 열립니다. 데이터는 그 기기의 브라우저에만 저장되니, 기기를 옮길 땐 설정의 백업을 쓰세요.</p></div>`;
+}
+
+/* --- 쇼츠 랭킹 --- */
+function viewRanking() {
+  const f = F(), s = cfg();
+  if (!ui.videos && s.demoMode) { ui.videos = demoVideos(f.rankKeyword); ui.videosDemo = true; }
+  const key = { views: "views", viewsToSubscriber: "viewsToSubscriber", engagement: "engagement", viewsPerHour: "viewsPerHour" }[f.rankSort];
+  const list = [...(ui.videos ?? [])].sort((a, b) => (b[key] ?? -Infinity) - (a[key] ?? -Infinity));
+  const chips = (v) => v.tags.map((t) => `<span class="chip ${t === "급상승" ? "hot" : t === "반응 좋음" ? "good" : t === "구독자 대비 대박" ? "big" : ""}">${esc(t)}</span>`).join("") || `<span class="muted small">눈에 띄는 태그 없음</span>`;
+  const card = (v, i) => `<div class="card video">
+    ${v.thumbnail && !v.example ? `<img class="thumb" src="${esc(v.thumbnail)}" alt="" onerror="this.outerHTML='<div class=&quot;thumb&quot;>${esc(v.title.slice(0, 18))}</div>'">` : `<div class="thumb">${esc(v.title.slice(0, 18))}</div>`}
+    <div style="flex:1;min-width:0"><b>${i + 1}위 · ${esc(v.title)}</b>
+    <div class="stat"><span>${esc(v.channel)}</span><span>${v.subscribers === null ? "구독자 비공개" : `구독자 ${fmtNum(v.subscribers)}`}</span>${v.durationSec ? `<span>${v.durationSec}초</span>` : ""}<span>${fmtAge(v.ageHours)}</span></div>
+    <div class="stat"><span>조회 ${fmtNum(v.views)}</span><span>속도 시간당 ${fmtNum(v.viewsPerHour)}</span><span>참여 ${fmtPct(v.engagement)}</span><span>${v.viewsToSubscriber === null ? "구독자 대비 -" : `구독자 대비 ${v.viewsToSubscriber >= 10 ? v.viewsToSubscriber.toFixed(0) : v.viewsToSubscriber.toFixed(1)}배`}</span></div>
+    <div>${chips(v)}</div>
+    <div class="row" style="margin-top:10px">${btn("담기", "vid-save", `data-i="${i}"`, "pine sm")}${v.url ? `<a class="btn sm sec" style="text-decoration:none" href="${esc(v.url)}" target="_blank" rel="noopener">유튜브에서 보기</a>` : `<span class="muted small">예시라 영상 주소는 없습니다.</span>`}</div></div></div>`;
+  const col = state.collection.map((v, i) => `<div class="card"><b>${esc(v.title)}</b>${v.example ? ' <span class="tag">예시</span>' : ""}
+    <div class="stat"><span>${esc(v.platformLabel)}</span><span>${esc(v.channel)}</span>${v.url ? `<a href="${esc(v.url)}" target="_blank" rel="noopener">${esc(v.url)}</a>` : ""}</div>${v.memo ? `<p class="small">${esc(v.memo)}</p>` : ""}
+    <div class="row">${btn("이 영상으로 대본 만들기", "vid-to-script", `data-i="${i}"`, "sm")}${btn("지우기", "vid-del", `data-i="${i}"`, "sec sm")}</div></div>`).join("");
+  return pageHead("ranking", "한국 유튜브 쇼츠를 검색하고, 빠른 영상과 반응이 좋은 영상을 골라 담습니다.") + msgBlocks() +
+    `<div class="card"><label class="f"><b>검색어</b><small>예: 콜라겐, 무릎 영양제, 주방템</small><input type="text" data-bind="forms.rankKeyword" value="${esc(f.rankKeyword)}"></label>
+    <b>기간</b><div class="row" style="margin:6px 0 12px">${choice(PERIODS.map((p) => [p[0], p[1]]), f.rankPeriod, "rank-period")}</div>
+    <p class="small muted" style="margin-bottom:10px">지역은 한국으로 고정입니다. 60초 이하만 보여 줍니다. 이번 검색은 무료 한도에서 약 102 유닛을 씁니다. 하루 10,000 유닛.</p>
+    ${btn(ui.busy === "rank" ? "찾는 중" : "쇼츠 검색", "rank-search", ui.busy ? "disabled" : "")}</div>` +
+    (ui.videosDemo ? `<div class="card warn">숫자를 직접 만든 예시입니다. 실제 검색은 체험 모드를 끄고 유튜브 키를 넣은 뒤에 됩니다.</div>` : "") +
+    `<div class="row" style="margin-bottom:12px"><b>정렬</b>${choice(SORTS, f.rankSort, "rank-sort")}</div>` +
+    (list.length ? list.map(card).join("") : `<div class="card muted">아직 목록이 없습니다. 검색어를 적고 쇼츠 검색을 누르세요.</div>`) +
+    `<p class="small muted">속도는 조회수를 올린 시간으로 나눈 값입니다. 참여는 (좋아요+댓글)÷조회수입니다. 구독자 대비는 조회수÷구독자입니다.</p>
+    <h2 style="margin-top:22px">다른 곳 링크 직접 추가</h2><p class="small muted">인스타, 틱톡 주소는 붙여 넣기만 합니다. 영상이나 글은 가져오지 않습니다.</p>
+    <div class="card"><div class="grid g2"><label class="f"><b>어디 영상인가요</b><input type="text" id="m-platform" value="인스타"></label><label class="f"><b>제목</b><input type="text" id="m-title"></label></div>
+    <label class="f"><b>주소</b><input type="text" id="m-url"></label><label class="f"><b>메모</b><small>첫 3초에 무엇을 보여 줬나요</small><input type="text" id="m-memo"></label>${btn("링크 담기", "vid-manual")}</div>
+    <h2>담아 둔 영상 ${state.collection.length}개</h2>${col || `<div class="card muted">아직 없습니다. 위에서 담기를 누르세요.</div>`}`;
+}
+
+/* --- 대본 --- */
+function viewScript() {
+  const f = F().script, r = state.last.script;
+  const field = (k, l, hint, rows) => `<label class="f"><b>${l}</b>${hint ? `<small>${hint}</small>` : ""}${rows ? `<textarea rows="${rows}" data-bind="forms.script.${k}">${esc(f[k])}</textarea>` : `<input type="text" data-bind="forms.script.${k}" value="${esc(f[k])}">`}</label>`;
+  const out = r ? exampleNote(r) + r.variants.map((v, i) => {
+    const p = `last.script.variants.${i}`;
+    return `<div class="card"><h2>${esc(v.style)} · 예상 길이 ${v.durationSec}초</h2>
+      ${editable("훅", v.hook, `${p}.hook`, { rows: 2 })}${editable("본문", v.body, `${p}.body`)}${editable("행동 유도", v.cta, `${p}.cta`, { rows: 2 })}
+      ${v.scenes.map((sc, k) => `<div class="card" style="background:#fff"><b>장면 ${k + 1} · ${esc(sc.seconds)}</b>
+        ${editable("대사", sc.narration, `${p}.scenes.${k}.narration`, { rows: 2 })}<p class="small"><b>화면</b> ${esc(sc.visualKo)}</p>
+        ${editable("클링 프롬프트 (영어)", sc.klingPrompt, `${p}.scenes.${k}.klingPrompt`, { rows: 2 })}${editable("힉스필드 프롬프트 (영어)", sc.higgsfieldPrompt, `${p}.scenes.${k}.higgsfieldPrompt`, { rows: 2 })}</div>`).join("")}
+      ${btn("SRT 자막 받기", "srt", `data-i="${i}"`, "navy sm")}</div>`;
+  }).join("") +
+    `<div class="card"><h2>제목 5개</h2>${r.titles.map((t, i) => editable(`${i + 1}`, t, `last.script.titles.${i}`, { rows: 1 })).join("")}
+      <p><b>해시태그</b> ${esc(r.hashtags.join(" "))}</p>${editable("고정 댓글", r.pinnedComment, "last.script.pinnedComment")}</div>
+    ${btn("전체 안전하게 고치기", "safe-all", 'data-k="script"', "pine")}` : "";
+  return pageHead("script", "상품 정보나 담아 둔 영상을 넣으면 30~45초 대본 3개가 나옵니다.") + msgBlocks() +
+    `<div class="card">${field("productName", "상품 이름")}${field("features", "특징", "맛, 양, 먹는 방법처럼 사실만 적으세요.", 3)}${field("target", "누구에게")}${field("price", "가격")}${field("link", "링크 (선택)", "있으면 고정 댓글에 쿠팡 파트너스 안내 문구가 붙습니다.")}
+    <div class="card" style="background:#fff"><b>참고 영상</b><p class="small muted">쇼츠 랭킹에서 담은 영상을 대본으로 보낼 수도 있습니다.</p>
+      <p>${f.referenceTitle ? esc(f.referenceTitle) : '<span class="muted">없음</span>'}</p>${f.referenceTitle ? btn("참고 지우기", "ref-clear", "", "sec sm") : ""}</div>
+    ${btn(ui.busy === "script" ? "만드는 중" : "대본 3개 만들기", "gen-script", ui.busy ? "disabled" : "")}</div>` + out;
+}
+
+/* --- 스레드 --- */
+const STATUS = { draft: "초안", approved: "승인됨", published: "게시됨", copied: "복사함" };
+function viewThreads() {
+  const f = F(), accs = state.accounts, accId = accs.some((a) => a.id === f.threadAccount) ? f.threadAccount : accs[0]?.id ?? "";
+  const list = state.drafts.map((d, i) => {
+    const hits = findBanned(d.text, cfg().bannedWords);
+    return `<div class="card"><div class="row" style="justify-content:space-between"><span><span class="tag">${STATUS[d.status]}</span>${d.example ? '<span class="tag">예시</span>' : ""}<span class="muted small">${esc(accs.find((a) => a.id === d.accountId)?.name ?? "")}</span></span><span class="small ${d.text.length > 500 ? "neg" : "muted"}">${d.text.length}자 / 스레드는 500자 안이 안전합니다.</span></div>
+      <textarea rows="6" style="margin-top:8px" data-bind="drafts.${i}.text" data-redraw="1">${esc(d.text)}</textarea>
+      ${hits.length ? `<div class="pre small" style="margin-top:6px">${highlightBanned(d.text, cfg().bannedWords)}</div>` : ""}
+      ${d.note ? `<p class="small muted">${esc(d.note)}</p>` : ""}
+      <div class="row" style="margin-top:8px">${btn("복사", "copy", `data-path="drafts.${i}.text"`, "sec sm")}${btn("안전하게 고치기", "draft-safe", `data-i="${i}"`, "pine sm")}${btn("승인", "draft-ok", `data-i="${i}"`, "sm")}${btn("게시", "draft-pub", `data-i="${i}"`, "navy sm")}${btn("삭제", "draft-del", `data-i="${i}"`, "sec sm")}</div></div>`;
+  }).join("");
+  return pageHead("threads", "반말 초안을 만들고, 승인된 글만 게시 버튼을 눌러 올립니다. 예약 게시는 없습니다.") + msgBlocks() +
+    `<div class="card"><b>계정</b><p class="small muted">계정은 2~3개, 하루 3~5개가 안전합니다. 토큰은 약 60일마다 다시 받아야 합니다.</p>
+    <div class="row" style="margin:8px 0">${accs.map((a) => `<span class="row" style="gap:4px"><button class="btn sm ${a.id === accId ? "on" : "sec"}" data-act="acc-pick" data-v="${a.id}">${esc(a.name)} · ${a.token ? "토큰 있음" : "토큰 없음 · 복사만 가능"}</button>${btn("삭제", "acc-del", `data-v="${a.id}"`, "sec sm")}</span>`).join("")}</div>
+    <div class="grid g3"><label class="f"><b>새 계정 이름</b><input type="text" id="acc-name" placeholder="예: 살림 계정"></label><label class="f"><b>스레드 토큰 (선택)</b><input type="password" id="acc-token"></label><div style="align-self:end;margin-bottom:14px">${btn("계정 추가", "acc-add")}</div></div></div>
+    <div class="card"><label class="f"><b>주제</b><input type="text" data-bind="forms.threadTopic" value="${esc(f.threadTopic)}"></label>
+    <b>몇 개나 만들까요</b><small class="muted"> 한 번에 1~5개</small><div class="row" style="margin:6px 0 12px">${choice([1, 2, 3, 4, 5].map((n) => [n, `${n}개`]), f.threadCount, "th-count")}</div>
+    <label class="f"><b>링크 (선택)</b><small>있으면 글 끝에 수수료 안내가 붙습니다.</small><input type="text" data-bind="forms.threadLink" value="${esc(f.threadLink)}"></label>
+    ${btn(ui.busy === "threads" ? "만드는 중" : "초안 만들기", "gen-threads", ui.busy ? "disabled" : "")}</div>` +
+    (list || `<div class="card muted">아직 초안이 없습니다.</div>`);
+}
+async function publishThreads(text, token) {
+  const post = (url, body) => fetch(url, { method: "POST", headers: { "content-type": "application/x-www-form-urlencoded" }, body: new URLSearchParams(body) });
+  const a = await post("https://graph.threads.net/v1.0/me/threads", { media_type: "TEXT", text, access_token: token });
+  const aj = await a.json().catch(() => ({}));
+  if (!a.ok || !aj.id) return { ok: false, reason: aj.error?.message ?? "게시에 실패했습니다." };
+  const b = await post("https://graph.threads.net/v1.0/me/threads_publish", { creation_id: aj.id, access_token: token });
+  const bj = await b.json().catch(() => ({}));
+  return !b.ok || !bj.id ? { ok: false, reason: bj.error?.message ?? "발행에 실패했습니다." } : { ok: true, id: bj.id };
+}
+
+/* --- 카드뉴스 --- */
+function viewCards() {
+  const f = F(), r = state.last.cards;
+  const strip = r ? `<div class="strip">${r.slides.map((_, i) => `<button class="btn sm ${i === ui.cardIdx ? "on" : "sec"}" data-act="card-idx" data-v="${i}">${i + 1}</button>`).join("")}</div>` : "";
+  const sl = r?.slides[ui.cardIdx];
+  return pageHead("cards", "주제와 직접 찍은 사진으로 7장 카드(1080×1350)를 만듭니다.") + msgBlocks() +
+    `<div class="card"><label class="f"><b>주제</b><input type="text" data-bind="forms.cardTopic" value="${esc(f.cardTopic)}"></label>
+    <label class="f"><b>상품 링크 (선택)</b><input type="text" data-bind="forms.cardLink" value="${esc(f.cardLink)}"></label>
+    <b>모양</b><div class="row" style="margin:6px 0 12px">${choice(Object.entries(CARD_THEMES).map(([k, t]) => [k, t.label]), f.cardTemplate, "card-theme")}</div>
+    <label class="f"><b>내 사진</b><small>1~7장. 남의 사진은 올리지 마세요. 사진이 적어도 글 카드는 만들어집니다. 사진은 이 창을 닫으면 사라집니다.</small><input type="file" id="card-photos" accept="image/*" multiple></label>
+    ${ui.cardPhotos.length ? `<p class="small muted">올린 사진 ${ui.cardPhotos.length}장</p>` : ""}
+    ${btn(ui.busy === "cards" ? "쓰는 중" : "문구 7장 만들기", "gen-cards", ui.busy ? "disabled" : "")}</div>` +
+    (r ? exampleNote(r) + `<div class="grid g2"><div>${strip}<canvas id="card-canvas" width="${CARD_W}" height="${CARD_H}"></canvas>
+      <div class="row" style="margin-top:8px">${btn("이 장 PNG", "card-png", "", "sm")}${btn("7장 ZIP", "card-zip", "", "navy sm")}</div></div>
+      <div>${editable(`${ui.cardIdx + 1}장 제목`, sl.title, `last.cards.slides.${ui.cardIdx}.title`, { rows: 2 })}${editable(`${ui.cardIdx + 1}장 본문`, sl.body, `last.cards.slides.${ui.cardIdx}.body`, { rows: 3 })}</div></div>
+      <div class="card" style="margin-top:14px">${editable("캡션", r.caption, "last.cards.caption", { rows: 5 })}<p><b>해시태그</b> ${esc(r.hashtags.join(" "))}</p><p><b>댓글 키워드</b> ${esc(r.commentKeyword)}</p>${editable("DM 답장 문장", r.dmReply, "last.cards.dmReply")}
+      <div class="row">${btn("캡션.txt", "card-txt", "", "sec sm")}${btn("전체 안전하게 고치기", "safe-all", 'data-k="cards"', "pine sm")}</div></div>` : "");
+}
+function wrapLines(ctx, text, maxW) {
+  const lines = [];
+  for (const para of text.split("\n")) {
+    let cur = "";
+    for (const ch of para) { const t = cur + ch; if (cur && ctx.measureText(t).width > maxW) { lines.push(cur); cur = ch.trim(); } else cur = t; }
+    lines.push(cur);
+  }
+  return lines;
+}
+function roundRect(ctx, x, y, w, h, r) { const c = Math.min(r, w / 2, h / 2); ctx.beginPath(); ctx.moveTo(x + c, y); ctx.arcTo(x + w, y, x + w, y + h, c); ctx.arcTo(x + w, y + h, x, y + h, c); ctx.arcTo(x, y + h, x, y, c); ctx.arcTo(x, y, x + w, y, c); ctx.closePath(); }
+function drawImageCover(ctx, img, x, y, w, h) { const s = Math.max(w / img.width, h / img.height), dw = img.width * s, dh = img.height * s; ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh); }
+function paintCard(canvas, slide, meta, themeId, photo) {
+  const ctx = canvas.getContext("2d"), t = CARD_THEMES[themeId] ?? CARD_THEMES.warm;
+  canvas.width = CARD_W; canvas.height = CARD_H;
+  const g = ctx.createLinearGradient(0, 0, 0, CARD_H); g.addColorStop(0, t.bg); g.addColorStop(1, t.bg2);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, CARD_W, CARD_H);
+  ctx.fillStyle = t.accent; ctx.fillRect(0, 0, CARD_W, 18);
+  ctx.globalAlpha = 0.18; ctx.beginPath(); ctx.arc(940, 180, 220, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1;
+  let y = 230;
+  if (photo) {
+    ctx.save(); roundRect(ctx, 70, 90, 940, 620, 36); ctx.clip(); drawImageCover(ctx, photo, 70, 90, 940, 620); ctx.restore();
+    const fade = ctx.createLinearGradient(0, 560, 0, 760); fade.addColorStop(0, "rgba(0,0,0,0)"); fade.addColorStop(1, t.bg); ctx.fillStyle = fade; ctx.fillRect(70, 560, 940, 200);
+    y = 760;
+  }
+  ctx.font = `700 32px ${CANVAS_FONT}`;
+  const chip = `${meta.index} / ${meta.total}  ${slide.kicker}`.trim(), cw = Math.min(860, ctx.measureText(chip).width + 48);
+  roundRect(ctx, 80, y, cw, 64, 32); ctx.fillStyle = t.chip; ctx.fill(); ctx.fillStyle = t.accent; ctx.fillText(chip, 104, y + 42);
+  ctx.fillStyle = t.ink; ctx.font = `700 72px ${CANVAS_FONT}`;
+  let ty = y + 150; for (const l of wrapLines(ctx, slide.title, 900).slice(0, 3)) { ctx.fillText(l, 80, ty); ty += 88; }
+  ctx.fillStyle = t.muted; ctx.font = `500 40px ${CANVAS_FONT}`; ty += 10;
+  for (const l of wrapLines(ctx, slide.body, 900).slice(0, 6)) { ctx.fillText(l, 80, ty); ty += 58; }
+  ctx.fillStyle = t.footer; ctx.font = `600 28px ${CANVAS_FONT}`; ctx.fillText("딸깍 스튜디오", 80, 1288);
+}
+function drawCards() {
+  const r = state.last.cards, c = $("#card-canvas"); if (!r || !c) return;
+  const go = () => { const cur = $("#card-canvas"); if (cur) paintCard(cur, r.slides[ui.cardIdx], { index: ui.cardIdx + 1, total: r.slides.length }, r.template, ui.cardPhotos[ui.cardIdx] ?? ui.cardPhotos[0] ?? null); };
+  go(); document.fonts?.ready.then(go);
+}
+const canvasBlob = (c) => new Promise((res, rej) => c.toBlob((b) => (b ? res(b) : rej(new Error("그림을 저장하지 못했습니다."))), "image/png"));
+async function loadJsZip() {
+  if (window.JSZip) return window.JSZip;
+  await new Promise((res, rej) => { const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"; s.onload = res; s.onerror = () => rej(new Error("ZIP 도구를 불러오지 못했습니다. 인터넷을 확인하거나 한 장씩 받아 주세요.")); document.head.appendChild(s); });
+  return window.JSZip;
+}
+async function cardsZip() {
+  const r = state.last.cards, JSZip = await loadJsZip(), zip = new JSZip(), c = document.createElement("canvas");
+  for (let i = 0; i < r.slides.length; i++) { paintCard(c, r.slides[i], { index: i + 1, total: r.slides.length }, r.template, ui.cardPhotos[i] ?? ui.cardPhotos[0] ?? null); zip.file(`카드-${i + 1}.png`, await canvasBlob(c)); }
+  zip.file("캡션.txt", [r.caption, r.hashtags.join(" "), `댓글 키워드: ${r.commentKeyword}`, r.dmReply].join("\n\n"));
+  download(await zip.generateAsync({ type: "blob" }), "카드뉴스.zip");
+}
+
+/* --- 운세 --- */
+function viewFortune() {
+  const f = F(), r = state.last.fortune;
+  return pageHead("fortune", "띠와 주제만 고르면 쇼츠 컷 대본이 나옵니다. 재미용입니다.") + msgBlocks() +
+    `<div class="card warn"><b>꼭 붙는 안내</b><p>${esc(FORTUNE_NOTE)}</p></div>
+    <div class="card"><b>띠</b><div class="grid g6" style="margin:6px 0 14px">${choice(ANIMALS.map((a) => [a, a]), f.fortuneAnimal, "fo-animal")}</div>
+    <b>주제</b><div class="row" style="margin:6px 0 14px">${choice(FORTUNE_TOPICS.map((a) => [a, a]), f.fortuneTopic, "fo-topic")}</div>
+    <b>컷 수</b><div class="row" style="margin:6px 0 14px">${choice(FORTUNE_CUTS, f.fortuneCuts, "fo-cuts")}</div>
+    ${btn(ui.busy === "fortune" ? "만드는 중" : "장면 대본 만들기", "gen-fortune", ui.busy ? "disabled" : "")}</div>` +
+    (r ? exampleNote(r) + `<h2>${esc(r.title)}</h2>` + r.cuts.map((c, i) => `<div class="card"><h2>${i + 1}컷</h2>${editable("대사", c.dialogue, `last.fortune.cuts.${i}.dialogue`, { rows: 2 })}${editable("내레이션", c.narration, `last.fortune.cuts.${i}.narration`, { rows: 2 })}${editable("이미지 프롬프트 (영어)", c.imagePrompt, `last.fortune.cuts.${i}.imagePrompt`, { rows: 2 })}${editable("영상 프롬프트 (영어)", c.videoPrompt, `last.fortune.cuts.${i}.videoPrompt`, { rows: 2 })}</div>`).join("") +
+      `<div class="card"><b>영상 끝에 넣을 안내</b><p class="pre" style="margin-top:6px">${esc(r.disclaimer)}</p></div>${btn("전체 안전하게 고치기", "safe-all", 'data-k="fortune"', "pine")}` : "");
+}
+
+/* --- 쇼츠 설계 --- */
+function studioText(r, md) {
+  const h = (t) => (md ? `## ${t}` : t);
+  return [md ? `# ${r.title}` : r.title, `썸네일: ${r.thumbnailText}`, "", h("대본"), `훅: ${r.hook}`, `본문: ${r.body}`, `행동 유도: ${r.cta}`, "", h("낭독"), r.ttsText, "", h("장면"),
+    ...r.scenes.map((s) => `${md ? "### " : ""}${s.no}장면 ${s.time}\n- 대사: ${s.narration}\n- 화면: ${s.visualKo}\n- 이미지: ${s.imagePrompt}\n- 영상: ${s.videoPrompt}`), "", h("해시태그"), r.hashtags.join(" "), "", h("고정 댓글"), r.comment].join("\n");
+}
+function viewStudio() {
+  const f = F(), r = state.last.studio;
+  return pageHead("studio", "주제 하나를 넣으면 대본, 장면, 프롬프트, 낭독문, 썸네일 글자까지 한 장으로 나옵니다.") + msgBlocks() +
+    `<div class="card"><label class="f"><b>주제</b><input type="text" data-bind="forms.studioTopic" value="${esc(f.studioTopic)}"></label><label class="f"><b>상품 이름 (선택)</b><input type="text" data-bind="forms.studioProduct" value="${esc(f.studioProduct)}"></label><label class="f"><b>링크 (선택)</b><input type="text" data-bind="forms.studioLink" value="${esc(f.studioLink)}"></label>
+    ${btn(ui.busy === "studio" ? "만드는 중" : "제작표 만들기", "gen-studio", ui.busy ? "disabled" : "")}</div>` +
+    (r ? exampleNote(r) + `<div class="card"><h2>${esc(r.title)}</h2>${editable("썸네일 글자", r.thumbnailText, "last.studio.thumbnailText", { rows: 1 })}${editable("훅", r.hook, "last.studio.hook", { rows: 2 })}${editable("본문", r.body, "last.studio.body")}${editable("행동 유도", r.cta, "last.studio.cta", { rows: 2 })}${editable("TTS 낭독문", r.ttsText, "last.studio.ttsText", { rows: 4 })}<p><b>해시태그</b> ${esc(r.hashtags.join(" "))}</p>${editable("고정 댓글", r.comment, "last.studio.comment")}</div>` +
+      r.scenes.map((s, i) => `<div class="card"><h2>${s.no}장면 · ${esc(s.time)}</h2>${editable("대사", s.narration, `last.studio.scenes.${i}.narration`, { rows: 2 })}<p class="small"><b>화면:</b> ${esc(s.visualKo)}</p>${editable("이미지 프롬프트 (영어)", s.imagePrompt, `last.studio.scenes.${i}.imagePrompt`, { rows: 2 })}${editable("영상 프롬프트 (영어)", s.videoPrompt, `last.studio.scenes.${i}.videoPrompt`, { rows: 2 })}</div>`).join("") +
+      `<div class="row">${btn("TXT 받기", "studio-txt", "", "sec")}${btn("마크다운 받기", "studio-md", "", "sec")}${btn("전체 안전하게 고치기", "safe-all", 'data-k="studio"', "pine")}</div>` : "");
+}
+
+/* --- 마진 계산기 (셀러 툴킷 자료에서 가져온 도구) --- */
+function calcMargin(r) {
+  const price = num(r.price), fee = price * num(r.fee) / 100, unit = price - num(r.cost) - num(r.shipping) - fee - num(r.ad) - num(r.misc);
+  const denom = 1 - num(r.fee) / 100;
+  return { unit, pct: price ? (unit / price) * 100 : 0, total: unit * (num(r.qty) || 1), be: denom > 0 ? (num(r.cost) + num(r.shipping) + num(r.ad) + num(r.misc)) / denom : null };
+}
+function viewMargin() {
+  const cols = [["cost", "원가"], ["price", "판매가"], ["shipping", "배송비"], ["fee", "수수료(%)"], ["ad", "광고비"], ["misc", "기타"], ["qty", "수량"]];
+  const rows = state.margin.map((r, i) => { const c = calcMargin(r), cls = c.unit >= 0 ? "pos" : "neg"; return `<tr><td><input type="text" data-bind="margin.${i}.name" data-redraw="1" value="${esc(r.name)}"></td>${cols.map(([k]) => `<td><input type="number" data-bind="margin.${i}.${k}" data-num="1" data-redraw="1" value="${esc(r[k])}"></td>`).join("")}<td class="${cls}">${fmtWon(c.unit)}</td><td class="${cls}">${c.pct.toFixed(1)}%</td><td class="${cls}">${fmtWon(c.total)}</td><td>${c.be === null ? "-" : fmtWon(c.be)}</td><td>${btn("×", "m-del", `data-i="${i}"`, "sec sm")}</td></tr>`; }).join("");
+  const sum = state.margin.reduce((a, r) => a + calcMargin(r).total, 0);
+  return pageHead("margin", "원가·판매가·수수료·광고비를 넣으면 개당마진, 마진율, 손익분기 판매가가 바로 계산됩니다.") +
+    `<div class="card scroll"><table><thead><tr><th>상품명</th>${cols.map(([, l]) => `<th>${l}</th>`).join("")}<th>개당마진</th><th>마진율</th><th>총마진</th><th>손익분기가</th><th></th></tr></thead><tbody>${rows}</tbody></table>
+    <p style="margin-top:12px"><b>총마진 합계:</b> <span class="${sum >= 0 ? "pos" : "neg"}">${fmtWon(sum)}</span></p>
+    <div class="row" style="margin-top:10px">${btn("행 추가", "m-add", "", "sm")}${btn("CSV로 내보내기 (엑셀에서 열림)", "m-csv", "", "sec sm")}</div></div>
+    <p class="small muted">개당마진 = 판매가 − 원가 − 배송비 − 판매가×수수료율 − 광고비 − 기타. 손익분기가 = (원가+배송비+광고비+기타) ÷ (1 − 수수료율).</p>`;
+}
+
+/* --- 설정 --- */
+function viewSettings() {
+  const s = cfg();
+  const keyField = (k, l, hint) => `<label class="f"><b>${l}</b>${hint ? `<small>${hint}</small>` : ""}<input type="password" data-bind="settings.${k}" value="${esc(s[k])}" autocomplete="off"></label>`;
+  return pageHead("settings", `지금은 ${s.demoMode ? "체험 모드" : "실제 모드"}입니다. 체험 모드는 키 없이 예시 데이터로 모든 버튼을 눌러 볼 수 있습니다.`) + msgBlocks() +
+    `<div class="card">${btn(s.demoMode ? "실제 모드로 바꾸기" : "체험 모드로 바꾸기", "toggle-demo", "", s.demoMode ? "pine" : "")}</div>
+    <div class="card"><b>AI 고르기</b><small class="muted"> 지금 선택: ${PROVIDERS[s.provider]}</small>
+      <div class="row" style="margin:8px 0">${choice([["gemini", "제미나이"], ["claude", "클로드"], ["openai", "오픈AI"]], s.provider, "provider")}</div>
+      <p class="small muted">제미나이: 브라우저에서 잘 됩니다. 처음이면 이것을 추천합니다. · 클로드: 브라우저 직접 연결용 헤더를 붙여 호출합니다. · 오픈AI: 브라우저에서 막힐 수 있습니다. 막히면 제미나이를 쓰세요.</p></div>
+    <div class="card"><p class="small muted" style="margin-bottom:10px">키는 이 브라우저에만 저장됩니다. 서버로 보내지 않습니다.</p>${keyField("youtubeKey", "유튜브 데이터 API 키", "쇼츠 랭킹 실제 검색에 씁니다.")}${keyField("claudeKey", "클로드 키")}${keyField("openaiKey", "오픈AI 키")}${keyField("geminiKey", "제미나이 키")}<p class="small muted">스레드 토큰은 스레드 글 화면의 계정에 넣습니다.</p></div>
+    <div class="card"><b>금지어</b><p class="small muted">건강기능식품 광고에서 피하면 좋은 말입니다. 지워도 되고, 더 넣어도 됩니다.</p>
+      <div class="row" style="margin:8px 0">${s.bannedWords.map((w, i) => `<span class="tag">${esc(w)} <a href="#" data-act="ban-del" data-i="${i}" style="text-decoration:none">×</a></span>`).join("")}</div>
+      <div class="row"><input type="text" id="ban-new" placeholder="추가할 말" style="max-width:260px">${btn("추가", "ban-add", "", "sm")}${btn("기본 목록으로", "ban-reset", "", "sec sm")}</div></div>
+    <div class="card"><b>백업</b><p class="small muted">담은 영상, 초안, 대본, 키까지 한 파일로 저장합니다. 사진은 들어가지 않습니다.</p><div class="row" style="margin-top:8px">${btn("JSON 백업 받기", "backup", "", "sec")}<label class="btn sec" style="cursor:pointer">백업 불러오기<input type="file" id="restore" accept="application/json" hidden></label></div></div>
+    <div class="card"><b>데이터 지우기</b><p class="small muted">키는 남기고 담아 둔 글과 영상을 지웁니다. 전부 지우기는 키도 지웁니다.</p><div class="row" style="margin-top:8px">${btn("글만 되돌리기", "reset-content", "", "sec")}${btn("전부 지우기", "reset-all", "", "danger")}</div></div>`;
+}
+
+/* ---------- 이벤트 ---------- */
+async function run(name, fn) {
+  ui.busy = name; ui.error = ""; ui.info = ""; render();
+  try { await fn(); } catch (e) { ui.error = e instanceof Error ? e.message : "처리하지 못했습니다."; }
+  ui.busy = ""; save(); render();
+}
+const actions = {
+  page: (el) => setPage(el.dataset.v),
+  "rank-period": (el) => { F().rankPeriod = el.dataset.v; save(); render(); },
+  "rank-sort": (el) => { F().rankSort = el.dataset.v; save(); render(); },
+  "rank-search": () => {
+    if (cfg().demoMode) { ui.videos = demoVideos(F().rankKeyword); ui.videosDemo = true; ui.error = ""; return render(); }
+    run("rank", async () => { ui.videos = await searchShorts({ key: cfg().youtubeKey, keyword: F().rankKeyword, period: F().rankPeriod }); ui.videosDemo = false; if (!ui.videos.length) ui.info = "이 조건의 60초 이하 쇼츠가 없습니다. 기간이나 검색어를 바꿔 보세요."; });
+  },
+  "vid-save": (el) => {
+    ui.error = ""; ui.info = "";
+    const item = sortedVideos()[Number(el.dataset.i)]; // 화면은 정렬된 목록이라 같은 순서로 찾는다
+    if (state.collection.some((c) => c.id === item.id || (item.url && c.url === item.url))) ui.error = "이미 담아 둔 영상입니다.";
+    else { state.collection = [{ ...item, savedAt: new Date().toISOString() }, ...state.collection].slice(0, 100); ui.info = "담았습니다. 아래 목록에서 대본으로 보낼 수 있어요."; }
+    save(); render();
+  },
+  "vid-manual": () => {
+    const title = $("#m-title").value.trim(), url = $("#m-url").value.trim();
+    if (!title || !url) { ui.error = "제목과 주소를 적어 주세요. 주소 안의 영상은 가져오지 않습니다."; return render(); }
+    state.collection.unshift({ id: uid("manual"), example: false, source: "manual", platformLabel: $("#m-platform").value.trim() || "직접 입력", title, channel: "직접 입력", channelId: "", url, thumbnail: "", subscribers: null, views: 0, likes: 0, comments: 0, publishedAt: new Date().toISOString(), durationSec: null, viewsPerHour: 0, engagement: 0, viewsToSubscriber: null, tags: [], ageHours: 0, memo: $("#m-memo").value.trim(), savedAt: new Date().toISOString() });
+    ui.error = ""; ui.info = "링크를 담았습니다. 영상 파일은 받지 않았습니다."; save(); render();
+  },
+  "vid-del": (el) => { state.collection.splice(Number(el.dataset.i), 1); save(); render(); },
+  "vid-to-script": (el) => { const v = state.collection[Number(el.dataset.i)]; Object.assign(F().script, { referenceTitle: v.title, referenceUrl: v.url, referenceNote: `${v.channel} · ${(v.tags ?? []).join(", ")}${v.memo ? ` · ${v.memo}` : ""}` }); save(); setPage("script"); },
+  "ref-clear": () => { Object.assign(F().script, { referenceTitle: "", referenceUrl: "", referenceNote: "" }); save(); render(); },
+  "gen-script": () => run("script", async () => { state.last.script = await genScript(F().script, cfg()); ui.info = cfg().demoMode ? "예시 대본을 만들었습니다." : "대본을 만들었습니다."; }),
+  srt: (el) => { const v = state.last.script.variants[Number(el.dataset.i)]; download(new Blob([buildSrt(v.scenes)], { type: "text/plain;charset=utf-8" }), `${v.style}-자막.srt`); },
+  "gen-threads": () => run("threads", async () => {
+    const acc = state.accounts.find((a) => a.id === F().threadAccount) ?? state.accounts[0];
+    if (!acc) throw new Error("계정을 먼저 추가하세요.");
+    const f = F(), texts = await genThreads({ topic: f.threadTopic, count: f.threadCount, link: f.threadLink }, cfg());
+    state.drafts = [...texts.map((t) => ({ id: uid("draft"), accountId: acc.id, topic: f.threadTopic.trim() || "주제", text: t, link: f.threadLink.trim(), status: "draft", createdAt: new Date().toISOString(), note: "", example: cfg().demoMode })), ...state.drafts].slice(0, 100);
+    ui.info = cfg().demoMode ? "예시 초안을 만들었습니다. 게시 버튼을 눌러도 실제로 올라가지 않습니다." : "초안을 만들었습니다. 승인 후 게시하세요.";
+  }),
+  "th-count": (el) => { F().threadCount = Number(el.dataset.v); save(); render(); },
+  "acc-pick": (el) => { F().threadAccount = el.dataset.v; save(); render(); },
+  "acc-add": () => { const name = $("#acc-name").value.trim(); if (!name) { ui.error = "계정 이름을 적어 주세요. 토큰은 없어도 됩니다."; return render(); } const id = uid("acc"); state.accounts.push({ id, name, token: $("#acc-token").value.trim() }); F().threadAccount = id; ui.error = ""; save(); render(); },
+  "acc-del": (el) => { state.accounts = state.accounts.filter((a) => a.id !== el.dataset.v); save(); render(); },
+  "draft-del": (el) => { state.drafts.splice(Number(el.dataset.i), 1); save(); render(); },
+  "draft-safe": (el) => run("safe", async () => { const d = state.drafts[Number(el.dataset.i)], r = await safeText(d.text, cfg()); d.text = r.text; d.status = "draft"; ui.info = (r.mode === "llm" ? "AI가 순하게 고쳤습니다." : "규칙으로 순하게 고쳤습니다.") + " 다시 승인하세요."; }),
+  "draft-ok": (el) => { const d = state.drafts[Number(el.dataset.i)]; d.status = "approved"; ui.error = ""; save(); render(); },
+  "draft-pub": (el) => run("pub", async () => {
+    const d = state.drafts[Number(el.dataset.i)];
+    if (d.status !== "approved") throw new Error("먼저 승인을 누르세요. 자동으로 올라가지 않습니다.");
+    if (findBanned(d.text, cfg().bannedWords).length) throw new Error("조심할 말이 남아 있습니다. 고친 뒤에 게시하세요.");
+    const acc = state.accounts.find((a) => a.id === d.accountId), token = acc?.token?.trim() ?? "";
+    if (cfg().demoMode) { const ok = await copyText(d.text); d.status = "copied"; ui.info = ok ? "체험 모드라 올리지 않고 복사만 했습니다." : "체험 모드라 올리지 않았습니다. 글을 직접 복사해 주세요."; return; }
+    if (!token) { const ok = await copyText(d.text); d.status = "copied"; ui.info = ok ? "이 계정에 토큰이 없습니다. 글을 복사했으니 스레드 앱에 붙여 넣으세요." : "이 계정에 토큰이 없습니다. 글을 직접 복사해 주세요."; return; }
+    let r; try { r = await publishThreads(d.text, token); } catch { r = { ok: false, reason: "브라우저에서 스레드 서버 연결이 막혔습니다." }; }
+    if (r.ok) { d.status = "published"; d.note = `게시 번호 ${r.id}`; ui.info = "게시했습니다."; }
+    else { const ok = await copyText(d.text); d.status = "copied"; ui.error = `${r.reason} ${ok ? "글을 복사해 두었습니다." : "글을 직접 복사해 주세요."}`; }
+  }),
+  "card-theme": (el) => { F().cardTemplate = el.dataset.v; if (state.last.cards) state.last.cards.template = el.dataset.v; save(); render(); },
+  "card-idx": (el) => { ui.cardIdx = Number(el.dataset.v); render(); },
+  "gen-cards": () => run("cards", async () => { const f = F(); state.last.cards = await genCards({ topic: f.cardTopic, link: f.cardLink, template: f.cardTemplate }, cfg()); ui.cardIdx = 0; }),
+  "card-png": () => run("png", async () => { download(await canvasBlob($("#card-canvas")), `카드-${ui.cardIdx + 1}.png`); }),
+  "card-zip": () => run("zip", cardsZip),
+  "card-txt": () => { const r = state.last.cards; download(new Blob([[r.caption, r.hashtags.join(" "), `댓글 키워드: ${r.commentKeyword}`, r.dmReply].join("\n\n")], { type: "text/plain;charset=utf-8" }), "캡션.txt"); },
+  "fo-animal": (el) => { F().fortuneAnimal = el.dataset.v; save(); render(); },
+  "fo-topic": (el) => { F().fortuneTopic = el.dataset.v; save(); render(); },
+  "fo-cuts": (el) => { F().fortuneCuts = Number(el.dataset.v); save(); render(); },
+  "gen-fortune": () => run("fortune", async () => { const f = F(); state.last.fortune = await genFortune({ animal: f.fortuneAnimal, topic: f.fortuneTopic, cuts: f.fortuneCuts }, cfg()); }),
+  "gen-studio": () => run("studio", async () => { const f = F(); state.last.studio = await genStudio({ topic: f.studioTopic, product: f.studioProduct, link: f.studioLink }, cfg()); }),
+  "studio-txt": () => download(new Blob([studioText(state.last.studio, false)], { type: "text/plain;charset=utf-8" }), "쇼츠제작표.txt"),
+  "studio-md": () => download(new Blob([studioText(state.last.studio, true)], { type: "text/markdown;charset=utf-8" }), "쇼츠제작표.md"),
+  "safe-all": (el) => run("safe", async () => { const k = el.dataset.k, cur = state.last[k], r = await safeDeep(cur, cfg()); state.last[k] = { ...r.value, example: cur.example, ...(k === "fortune" ? { disclaimer: FORTUNE_NOTE } : {}) }; ui.info = r.mode === "llm" ? "전체 글을 AI가 순하게 고쳤습니다." : "전체 글을 규칙으로 순하게 고쳤습니다."; }),
+  copy: async (el) => { const t = getPath(state, el.dataset.path); toast((await copyText(String(t ?? ""))) ? "복사됨" : "복사하지 못했습니다"); },
+  "m-add": () => { state.margin.push({ name: "", cost: 0, price: 0, shipping: 0, fee: 12, ad: 0, misc: 0, qty: 1 }); save(); render(); },
+  "m-del": (el) => { state.margin.splice(Number(el.dataset.i), 1); save(); render(); },
+  "m-csv": () => {
+    const head = ["상품명", "원가", "판매가", "배송비", "수수료율(%)", "광고비", "기타비용", "수량", "개당마진", "마진율(%)", "총마진", "손익분기가"];
+    const q = (v) => `"${String(v).replace(/"/g, '""')}"`;
+    const lines = state.margin.map((r) => { const c = calcMargin(r); return [r.name, r.cost, r.price, r.shipping, r.fee, r.ad, r.misc, r.qty, Math.round(c.unit), c.pct.toFixed(1), Math.round(c.total), c.be === null ? "" : Math.round(c.be)].map(q).join(","); });
+    download(new Blob(["﻿" + [head.map(q).join(","), ...lines].join("\n")], { type: "text/csv;charset=utf-8" }), "마진계산.csv");
+  },
+  "toggle-demo": () => toggleDemo(),
+  provider: (el) => { cfg().provider = el.dataset.v; save(); render(); },
+  "ban-add": () => { const v = $("#ban-new").value.trim(); if (!v) return; if (cfg().bannedWords.includes(v)) { ui.error = "이미 있는 말입니다."; return render(); } cfg().bannedWords.push(v); ui.error = ""; save(); render(); },
+  "ban-del": (el) => { cfg().bannedWords.splice(Number(el.dataset.i), 1); save(); render(); },
+  "ban-reset": () => { cfg().bannedWords = [...DEFAULT_BANNED]; save(); render(); },
+  backup: () => download(new Blob([JSON.stringify(state, null, 1)], { type: "application/json" }), "딸깍스튜디오-백업.json"),
+  "reset-content": () => { const keep = state.settings; state = freshState(); state.settings = keep; ui.videos = null; ui.info = "글을 되돌렸습니다. 키는 그대로입니다."; save(); render(); },
+  "reset-all": () => { if (!confirm("키와 글을 모두 지울까요?")) return; state = freshState(); ui.videos = null; ui.info = "모두 지우고 체험 모드로 돌아왔습니다."; save(); render(); },
+};
+function sortedVideos() { const k = F().rankSort; return [...(ui.videos ?? [])].sort((a, b) => (b[k] ?? -Infinity) - (a[k] ?? -Infinity)); }
+function toggleDemo() { cfg().demoMode = !cfg().demoMode; if (cfg().demoMode) { ui.videos = demoVideos(F().rankKeyword); ui.videosDemo = true; } else if (ui.videosDemo) { ui.videos = null; ui.videosDemo = false; } save(); render(); }
+
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-act]"); if (!el) return;
+  e.preventDefault();
+  const fn = actions[el.dataset.act]; if (fn) fn(el);
+});
+$("#modeBtn").addEventListener("click", toggleDemo);
+/* 입력 칸 → state. 글이 바뀌면 저장만 하고, 표시가 달라져야 하는 칸(data-redraw)만 다시 그린다. */
+document.addEventListener("input", (e) => {
+  const el = e.target; const path = el.dataset?.bind; if (!path) return;
+  setPath(state, path, el.dataset.num ? Number(el.value) : el.value); save();
+  if (el.dataset.redraw || path.startsWith("last.") || path.startsWith("drafts.")) {
+    const pos = el.selectionStart, id = path; clearTimeout(window.__rd);
+    window.__rd = setTimeout(() => { render(); const again = document.querySelector(`[data-bind="${CSS.escape(id)}"]`); if (again && document.activeElement !== again) { again.focus(); try { again.setSelectionRange(pos, pos); } catch { /* 숫자 칸은 선택 범위 없음 */ } } }, 600);
+  }
+});
+document.addEventListener("change", async (e) => {
+  if (e.target.id === "card-photos") {
+    try {
+      const imgs = [];
+      for (const file of Array.from(e.target.files).slice(0, 7)) {
+        const url = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result)); r.onerror = () => rej(new Error("사진을 읽지 못했습니다.")); r.readAsDataURL(file); });
+        imgs.push(await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error("사진을 열지 못했습니다.")); im.src = url; }));
+      }
+      ui.cardPhotos = imgs; ui.error = ""; render();
+    } catch (err) { ui.error = err instanceof Error ? err.message : "사진을 올리지 못했습니다."; render(); }
+  }
+  if (e.target.id === "restore") {
+    try {
+      const j = JSON.parse(await e.target.files[0].text());
+      if (!j || j.version !== 2 || !j.settings) throw new Error();
+      state = { ...freshState(), ...j }; ui.videos = null; ui.info = "백업을 불러왔습니다."; save(); render();
+    } catch { ui.error = "이 파일은 딸깍 스튜디오 백업이 아닙니다."; render(); }
+  }
+});
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(() => { /* 서비스워커 없이도 동작 */ });
+render();
+</script>
+</body>
+</html>
