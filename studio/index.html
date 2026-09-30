@@ -2,7 +2,12 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#c4511a" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="icon-192.png" />
 <title>딸깍 스튜디오</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect rx='16' width='64' height='64' fill='%23c4511a'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-size='28' fill='white' font-family='sans-serif'%3E딸%3C/text%3E%3C/svg%3E" />
 <style>
@@ -62,7 +67,41 @@ canvas{width:100%;height:auto;border:1px solid var(--line);border-radius:14px;ba
 .strip{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-weight:700;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s}
 .toast.show{opacity:1}
-@media(max-width:900px){.layout{display:block}aside{position:static;width:auto;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:8px}.brand{display:none}nav{flex-direction:row;overflow-x:auto}nav button{flex-shrink:0}header.top{padding:10px 16px}header.top p{display:none}main{padding:18px 16px 30px}footer{padding:0 16px 30px}.g2,.g3{grid-template-columns:1fr}.g6{grid-template-columns:repeat(3,1fr)}}
+@media(prefers-color-scheme:dark){:root{--paper:#1b1612;--ink:#f3ebe0;--clay:#e0703a;--pine:#3a9a68;--navy:#4a7aa8;--line:#3a2f27;--card:#251e18;--muted:#b8a999;--danger:#ff8a8a;--amber:#3a2e0e;--amber-line:#8a6a10}
+aside{background:#211a15}nav button:hover{background:#2c231c}header.top{background:rgba(27,22,18,.95)}
+input[type=text],input[type=password],input[type=number],select,textarea,.btn.sec,th,.pre,.card[style*="background:#fff"]{background:#1b1612!important;color:var(--ink)}
+.card.err{background:#3a1616;border-color:#7a2a2a}.card.ok{background:#12301f;border-color:#2a6a46}.bad{background:#5a2020}}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;cursor:pointer;text-align:left}
+.kpi small{display:block;color:var(--muted);font-size:14px}.kpi b{display:block;font-size:30px;line-height:1.2}.kpi span{font-size:13px;color:var(--muted)}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.quick button{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 8px;cursor:pointer;text-align:center;font-weight:700}
+.quick button i{display:block;font-style:normal;font-size:28px;margin-bottom:2px}.quick button:hover{border-color:var(--clay)}
+.steps{display:flex;flex-direction:column;gap:8px}
+.step{display:flex;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer;text-align:left;width:100%}
+.step .dot{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:var(--line);flex-shrink:0}.step.done .dot{background:var(--pine);color:#fff}
+.bars .b{display:grid;grid-template-columns:110px 1fr 64px;gap:8px;align-items:center;margin:6px 0;font-size:15px}
+.bars .track{height:14px;background:var(--line);border-radius:8px;overflow:hidden}.bars .fill{height:100%;background:var(--pine)}.bars .fill.neg{background:var(--danger)}
+.nav-ic{display:none}
+@media(max-width:900px){
+  html{font-size:16px}
+  .layout{display:block}
+  .brand,header.top p{display:none}
+  aside{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:20;width:auto;height:auto;padding:6px 6px calc(6px + env(safe-area-inset-bottom));border-right:0;border-top:1px solid var(--line);border-bottom:0}
+  nav{flex-direction:row;overflow-x:auto;gap:4px;scrollbar-width:none}nav::-webkit-scrollbar{display:none}
+  nav button{flex:0 0 auto;min-width:68px;text-align:center;padding:6px 8px;font-size:13px;border-radius:12px}
+  .nav-ic{display:block;font-size:20px;line-height:1.2}
+  header.top{padding:calc(10px + env(safe-area-inset-top)) 14px 10px}
+  main{padding:16px 14px calc(96px + env(safe-area-inset-bottom))}
+  footer{padding:0 14px calc(90px + env(safe-area-inset-bottom))}
+  h1{font-size:24px}
+  .kpis,.quick{grid-template-columns:repeat(2,1fr)}
+  .btn{padding:12px 16px}.btn.sm{padding:9px 12px}
+  input[type=text],input[type=password],input[type=number],select,textarea{font-size:16px}
+  .video{flex-direction:column}.thumb{width:100%;aspect-ratio:16/9}
+  .bars .b{grid-template-columns:80px 1fr 56px}
+  .g2,.g3{grid-template-columns:1fr}.g6{grid-template-columns:repeat(3,1fr)}
+}
 </style>
 </head>
 <body>
@@ -100,6 +139,7 @@ const SYSTEM_PROMPT = `당신은 한국 40~60대 손님을 위한 쇼핑 콘텐�
 출력은 설명 없이 JSON 하나만 보냅니다.`;
 
 const PAGES = [
+  ["dashboard", "대시보드", "대시보드"],
   ["ranking", "쇼츠 랭킹", "쇼츠 레퍼런스 랭킹"],
   ["script", "대본 생성", "대본 생성기"],
   ["threads", "스레드 글", "스레드 글 공장"],
@@ -109,6 +149,7 @@ const PAGES = [
   ["margin", "마진 계산기", "마진 계산기"],
   ["settings", "설정", "설정"],
 ];
+const ICONS = { dashboard: "🏠", ranking: "📈", script: "🎬", threads: "🧵", cards: "🖼️", fortune: "🔮", studio: "🎛️", margin: "🧮", settings: "⚙️" };
 const PERIODS = [["48h", "48시간", 48], ["7d", "7일", 168], ["30d", "30일", 720], ["90d", "90일", 2160]];
 const SORTS = [["viewsPerHour", "속도순"], ["engagement", "참여순"], ["viewsToSubscriber", "구독자 대비"], ["views", "조회수순"]];
 const ANIMALS = ["쥐", "소", "호랑이", "토끼", "용", "뱀", "말", "양", "원숭이", "닭", "개", "돼지"];
@@ -574,7 +615,7 @@ function loadState() {
   return freshState();
 }
 let state = loadState();
-let page = "ranking";
+let page = "dashboard";
 let ui = { videos: null, videosDemo: false, busy: "", error: "", info: "", cardPhotos: [], cardIdx: 0, rankTab: "" };
 function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch { toast("브라우저 저장 공간이 부족합니다. 설정에서 백업을 받아 두세요."); } }
 
@@ -602,11 +643,43 @@ function getPath(root, path) { return path.split(".").reduce((o, k) => (o == nul
 function setPath(root, path, val) { const ks = path.split("."), last = ks.pop(); const t = ks.reduce((o, k) => o[k], root); t[last] = val; }
 
 function render() {
-  $("#nav").innerHTML = PAGES.map(([id, label]) => `<button class="${id === page ? "on" : ""}" data-act="page" data-v="${id}">${esc(label)}</button>`).join("");
+  $("#nav").innerHTML = PAGES.map(([id, label]) => `<button class="${id === page ? "on" : ""}" data-act="page" data-v="${id}"><span class="nav-ic">${ICONS[id]}</span>${esc(label)}</button>`).join("");
   $("#aiLabel").textContent = cfg().demoMode ? "AI: 체험" : `AI: ${PROVIDERS[cfg().provider]}`;
   const mb = $("#modeBtn"); mb.textContent = cfg().demoMode ? "체험 모드" : "실제 모드"; mb.className = "btn sm " + (cfg().demoMode ? "" : "pine"); mb.style.background = cfg().demoMode ? "#fde68a" : ""; mb.style.color = cfg().demoMode ? "#451a03" : "";
-  view.innerHTML = ({ ranking: viewRanking, script: viewScript, threads: viewThreads, cards: viewCards, fortune: viewFortune, studio: viewStudio, margin: viewMargin, settings: viewSettings })[page]();
+  view.innerHTML = ({ dashboard: viewDashboard, ranking: viewRanking, script: viewScript, threads: viewThreads, cards: viewCards, fortune: viewFortune, studio: viewStudio, margin: viewMargin, settings: viewSettings })[page]();
   if (page === "cards") drawCards();
+}
+
+/* --- 대시보드 (첫 화면) --- */
+function viewDashboard() {
+  const st = state, L = st.last, drafts = st.drafts;
+  const cnt = (k) => drafts.filter((d) => d.status === k).length;
+  const marginRows = st.margin.map((r) => ({ name: r.name || "이름 없음", ...calcMargin(r) }));
+  const marginSum = marginRows.reduce((a, r) => a + r.total, 0);
+  const kpi = (label, value, sub, to) => `<button class="kpi" data-act="page" data-v="${to}"><small>${label}</small><b>${value}</b><span>${sub}</span></button>`;
+  const steps = [
+    ["쇼츠 랭킹에서 잘 되는 영상 담기", st.collection.length > 0, "ranking", `${st.collection.length}개 담음`],
+    ["대본 3개 만들기", !!L.script, "script", L.script ? `${L.script.productName} · ${L.script.example ? "예시" : "실제"}` : "아직"],
+    ["스레드 초안 만들고 승인하기", cnt("approved") + cnt("published") + cnt("copied") > 0, "threads", `초안 ${cnt("draft")} · 승인 ${cnt("approved")} · 게시/복사 ${cnt("published") + cnt("copied")}`],
+    ["카드뉴스 7장 만들기", !!L.cards, "cards", L.cards ? L.cards.topic : "아직"],
+    ["운세 쇼츠·제작표 만들기", !!(L.fortune || L.studio), "fortune", `${L.fortune ? "운세 ✓ " : ""}${L.studio ? "제작표 ✓" : ""}` || "아직"],
+  ];
+  const doneN = steps.filter((x) => x[1]).length;
+  const needKey = !cfg().demoMode && !providerKey(cfg());
+  const recent = [
+    ...st.collection.slice(0, 3).map((v) => `<div class="small" style="padding:6px 0;border-bottom:1px solid var(--line)">🎞 ${esc(v.title)} <span class="muted">· ${esc(v.channel)}</span></div>`),
+    ...drafts.slice(0, 3).map((d) => `<div class="small" style="padding:6px 0;border-bottom:1px solid var(--line)">🧵 <span class="tag">${STATUS[d.status]}</span>${esc(d.text.split("\n")[0].slice(0, 40))}</div>`),
+  ].join("");
+  const maxAbs = Math.max(1, ...marginRows.map((r) => Math.abs(r.pct)));
+  return pageHead("dashboard", "오늘 만든 것과 다음 할 일을 한눈에 봅니다. 폰에서도 그대로 쓸 수 있어요.") +
+    (cfg().demoMode ? `<div class="card warn"><b>체험 모드입니다.</b> 지금 보이는 글과 숫자는 예시예요. 실제로 쓰려면 설정에서 키를 넣고 실제 모드로 바꾸세요. ${btn("설정 열기", "page", 'data-v="settings"', "sm sec")}</div>` : "") +
+    (needKey ? `<div class="card err">실제 모드인데 ${PROVIDERS[cfg().provider]} 키가 없습니다. 설정에서 키를 넣어 주세요.</div>` : "") +
+    `<div class="kpis">${kpi("담아 둔 영상", st.collection.length, "쇼츠 랭킹", "ranking")}${kpi("스레드 초안", drafts.length, `승인 ${cnt("approved")} · 게시 ${cnt("published")}`, "threads")}${kpi("오늘 진행", `${doneN}/${steps.length}`, "아래 순서대로", "dashboard")}${kpi("마진 합계", fmtWon(marginSum), `${marginRows.length}개 상품`, "margin")}</div>` +
+    `<h2>바로 가기</h2><div class="quick" style="margin-bottom:16px">${PAGES.filter((p) => !["dashboard", "settings"].includes(p[0])).map(([id, l]) => `<button data-act="page" data-v="${id}"><i>${ICONS[id]}</i>${esc(l)}</button>`).join("")}</div>` +
+    `<div class="grid g2"><div><h2>오늘 순서</h2><div class="steps">${steps.map(([t, done, to, sub], i) => `<button class="step ${done ? "done" : ""}" data-act="page" data-v="${to}"><span class="dot">${done ? "✓" : i + 1}</span><span><b>${esc(t)}</b><br><span class="muted small">${esc(sub)}</span></span></button>`).join("")}</div></div>
+    <div><h2>마진율</h2><div class="card bars">${marginRows.length ? marginRows.map((r) => `<div class="b"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.name)}</span><span class="track"><span class="fill ${r.pct < 0 ? "neg" : ""}" style="display:block;width:${Math.max(3, Math.abs(r.pct) / maxAbs * 100)}%"></span></span><b class="${r.pct >= 0 ? "pos" : "neg"}">${r.pct.toFixed(1)}%</b></div>`).join("") : '<span class="muted">마진 계산기에서 상품을 추가하세요.</span>'}</div>
+    <h2>최근 항목</h2><div class="card">${recent || '<span class="muted">아직 없습니다.</span>'}</div></div></div>` +
+    `<div class="card"><b>폰에 설치하기</b><p class="small muted" style="margin-top:4px">크롬은 메뉴 → "홈 화면에 추가", 아이폰 사파리는 공유 → "홈 화면에 추가"를 누르면 앱처럼 열립니다. 데이터는 그 기기의 브라우저에만 저장되니, 기기를 옮길 땐 설정의 백업을 쓰세요.</p></div>`;
 }
 
 /* --- 쇼츠 랭킹 --- */
@@ -954,6 +1027,7 @@ document.addEventListener("change", async (e) => {
     } catch { ui.error = "이 파일은 딸깍 스튜디오 백업이 아닙니다."; render(); }
   }
 });
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(() => { /* 서비스워커 없이도 동작 */ });
 render();
 </script>
 </body>
