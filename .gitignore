@@ -8,3 +8,5 @@ data/outputs/*
 !data/outputs/.gitkeep
 .DS_Store
 data/*.db
+data/owner.json
+data/secret_key

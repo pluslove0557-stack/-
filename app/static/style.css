@@ -158,3 +158,22 @@ tbody input { min-width: 80px; }
 }
 
 #status { color: var(--muted); font-size: 0.9rem; }
+
+/* 소유자 잠금 */
+.brand .lock { font-size: 0.72rem; color: var(--muted); font-weight: 500; margin-left: 6px; }
+.nav .logout { display: inline; margin: 0; }
+.nav .logout button { background: none; border: 1px solid var(--border); color: var(--muted);
+  border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 0.85rem; }
+.nav .logout button:hover { color: var(--text); }
+.auth-card { max-width: 420px; margin: 40px auto; }
+.auth-card form { display: flex; flex-direction: column; gap: 12px; }
+.auth-card label { display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: 0.9rem; }
+.auth-card input { padding: 10px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--panel-2); color: var(--text); font-size: 1rem; }
+.auth-card .alert { color: var(--danger); }
+.auth-card .ok { color: var(--accent-2); }
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin: 16px 0; }
+.card .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+.card textarea, .card input, .card select { background: var(--panel-2); color: var(--text);
+  border: 1px solid var(--border); border-radius: 8px; padding: 8px; }
+.card textarea { width: 100%; }

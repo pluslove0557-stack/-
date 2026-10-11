@@ -5,7 +5,6 @@ from flask import Flask
 def create_app():
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     app = Flask(__name__)
-    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-only-not-for-production")
     app.config["UPLOAD_DIR"] = os.path.join(base_dir, "data", "uploads")
     app.config["OUTPUT_DIR"] = os.path.join(base_dir, "data", "outputs")
     app.config["DB_DIR"] = os.path.join(base_dir, "data")
@@ -14,6 +13,9 @@ def create_app():
 
     os.makedirs(app.config["UPLOAD_DIR"], exist_ok=True)
     os.makedirs(app.config["OUTPUT_DIR"], exist_ok=True)
+
+    from app import auth
+    auth.init_app(app)
 
     from app.routes.home_routes import home_bp
     from app.routes.margin_routes import margin_bp
