@@ -3,18 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{% block title %}셀러 자동화 툴킷{% endblock %}</title>
+<title>{% block title %}내 스튜디오{% endblock %}</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="{{ url_for('home.index') }}">셀러 자동화 툴킷</a>
+  <a class="brand" href="{{ url_for('home.index') }}">내 스튜디오 <span class="lock">🔒 나만 사용</span></a>
   <nav class="nav">
     <a href="{{ url_for('margin.index') }}">마진계산기</a>
     <a href="{{ url_for('image.index') }}">이미지변환</a>
     <a href="{{ url_for('listing.index') }}">상품등록</a>
     <a href="{{ url_for('sourcing.index') }}">소싱스코어링</a>
     <a href="{{ url_for('prompts.index') }}">이미지프롬프터</a>
+    <a href="{{ url_for('collector.index') }}">영상수집함</a>
+    {% if session.get('owner') %}
+    <a href="{{ url_for('auth.change_password') }}">비밀번호</a>
+    <form method="post" action="{{ url_for('auth.logout') }}" class="logout"><button type="submit">로그아웃</button></form>
+    {% endif %}
   </nav>
 </header>
 <main class="container">

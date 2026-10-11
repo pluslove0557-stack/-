@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}영상 수집함{% endblock %}
+{% block content %}
+<h1>영상 수집함 (도우인 · 샤오홍슈)</h1>
+<p class="muted">앱에서 <b>공유 → 링크 복사</b>한 내용을 붙여넣으면 링크를 추출해 제목/썸네일을 가져오고,
+레시피 / 상품으로 자동 분류합니다. 검색결과 대량 크롤링과 영상 파일 다운로드는 지원하지 않으며,
+수집한 영상의 저작권은 원작자에게 있으므로 재업로드·판매 전 반드시 사용 허락을 받으세요.</p>
+
+<section class="card">
+  <textarea id="paste" rows="5" placeholder="공유 문구/링크를 여러 개 붙여넣기 (줄바꿈 구분)"></textarea>
+  <div class="row">
+    <select id="forceCat">
+      <option value="">분류: 자동</option>
+      {% for k, v in categories.items() %}<option value="{{ k }}">{{ v }}</option>{% endfor %}
+    </select>
+    <button id="addBtn" class="btn btn-primary">수집하기</button>
+    <span id="msg" class="muted"></span>
+  </div>
+</section>
+
+<section class="card">
+  <div class="row">
+    <input id="q" placeholder="제목/태그/메모 검색">
+    <select id="fPlatform"><option value="">전체 플랫폼</option>
+      {% for k, v in platforms.items() %}{% if k != 'other' %}<option value="{{ k }}">{{ v }}</option>{% endif %}{% endfor %}
+    </select>
+    <select id="fCat"><option value="">전체 분류</option>
+      {% for k, v in categories.items() %}<option value="{{ k }}">{{ v }}</option>{% endfor %}
+    </select>
+    <a id="exportLink" class="btn" href="#">CSV 내보내기</a>
+  </div>
+  <table class="table">
+    <thead><tr><th>썸네일</th><th>제목 / 링크</th><th>플랫폼</th><th>분류</th><th>태그 · 메모</th><th></th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+const PL = {{ platforms|tojson }}, CAT = {{ categories|tojson }};
+const $ = id => document.getElementById(id);
+const esc = s => (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const post = (u, b) => fetch(u, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)}).then(r => r.json());
+const qs = () => new URLSearchParams({q:$('q').value, platform:$('fPlatform').value, category:$('fCat').value}).toString();
+
+async function load() {
+  const {rows} = await (await fetch('/collector/list?' + qs())).json();
+  $('exportLink').href = '/collector/export?' + qs();
+  $('rows').innerHTML = rows.map(r => `<tr>
+    <td>${r.thumbnail ? `<img src="${esc(r.thumbnail)}" width="64" referrerpolicy="no-referrer">` : ''}</td>
+    <td><a href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">${esc(r.title) || esc(r.url)}</a></td>
+    <td>${PL[r.platform] || r.platform}</td>
+    <td><select data-id="${r.id}" data-f="category">${Object.entries(CAT).map(([k,v]) =>
+        `<option value="${k}" ${k===r.category?'selected':''}>${v}</option>`).join('')}</select></td>
+    <td><input data-id="${r.id}" data-f="tags" value="${esc(r.tags)}" placeholder="태그">
+        <input data-id="${r.id}" data-f="note" value="${esc(r.note)}" placeholder="메모"></td>
+    <td><button data-del="${r.id}">삭제</button></td></tr>`).join('');
+}
+$('rows').addEventListener('change', e => {
+  const t = e.target; if (t.dataset.id) post('/collector/update/' + t.dataset.id, {[t.dataset.f]: t.value});
+});
+$('rows').addEventListener('click', async e => {
+  const id = e.target.dataset.del;
+  if (id && confirm('삭제할까요?')) { await post('/collector/delete/' + id, {}); load(); }
+});
+$('addBtn').onclick = async () => {
+  $('msg').textContent = '수집 중...';
+  const r = await post('/collector/add', {text:$('paste').value, category:$('forceCat').value});
+  $('msg').textContent = r.error || `추가 ${r.added} · 중복 ${r.duplicate} · 메타정보 실패 ${r.meta_failed}`;
+  if (!r.error) { $('paste').value = ''; load(); }
+};
+['q','fPlatform','fCat'].forEach(id => $(id).addEventListener('input', load));
+load();
+</script>
+{% endblock %}
