@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}나만의 미국 소싱 프로그램{% endblock %}
+{% block content %}
+<h1>나만의 미국 소싱 프로그램</h1>
+<p class="lead">미국 아마존·월마트 상품을 찾아 국내 6대 마켓(쿠팡·네이버·G마켓·옥션·11번가·롯데온)에 구매대행으로 올리는 흐름을 한 곳에서 처리합니다.</p>
+
+<div class="stat-row">
+  {% for st, n in counts.items() %}
+  <a class="stat" href="{{ url_for('us.candidates', status=st) }}"><div class="n">{{ n }}</div><div class="l">{{ st }}</div></a>
+  {% endfor %}
+  <a class="stat" href="{{ url_for('us.sales') }}"><div class="n">{{ sales_count }}</div><div class="l">내 판매이력</div></a>
+</div>
+
+<h2>작업 순서</h2>
+<div class="steps">
+  <a class="step" href="{{ url_for('us.ideas') }}"><b>① 아이디어 → 키워드</b><span>"테슬라", "고양이"처럼 팔고 싶은 걸 넣으면 검색 키워드, 아마존/월마트/네이버 링크, GPT 소싱 프롬프트를 만들어 줍니다.</span></a>
+  <a class="step" href="{{ url_for('us.import_items') }}"><b>② 후보 가져오기</b><span>GPT가 준 CSV, 엑셀, 직접 입력. ASIN 기준으로 중복은 자동으로 거릅니다.</span></a>
+  <a class="step" href="{{ url_for('us.candidates') }}"><b>③ 자동 제외 + 점수</b><span>판매 불가 품목은 빼고, 원가·마진·수요·국내경쟁·배송조건·내 판매이력 유사도로 순위를 매깁니다.</span></a>
+  <a class="step" href="{{ url_for('us.candidates', status='선정') }}"><b>④ 상품명·태그·상세</b><span>한국어 상품명(50자), 태그 10개, 구매대행 고지가 들어간 상세페이지를 만듭니다.</span></a>
+  <a class="step" href="{{ url_for('us.export_selected_status', status='선정') }}"><b>⑤ 등록용 엑셀</b><span>'선정' 상품을 채널별 판매가와 함께 엑셀로 받습니다. 기존 <a href="{{ url_for('listing.index') }}">상품등록 도우미</a>로 각 마켓 양식에 맞춥니다.</span></a>
+  <a class="step" href="{{ url_for('us.order') }}"><b>⑥ 주문 처리</b><span>고객 한글 주소를 아마존 배송지용 영문으로 바꾸고 개인통관고유부호 형식을 검사합니다.</span></a>
+</div>
+
+<h2>보조 도구</h2>
+<div class="steps">
+  <a class="step" href="{{ url_for('us.sales') }}"><b>내 판매이력 학습</b><span>실제로 팔린 상품명을 넣으면 비슷한 후보의 점수가 올라갑니다.</span></a>
+  <a class="step" href="{{ url_for('us.longtail') }}"><b>롱테일 플래너</b><span>"30일에 1개 팔리는 상품 30개 = 하루 1건" 계산. 목표 주문 수에 몇 개를 등록해야 하는지 봅니다.</span></a>
+  <a class="step" href="{{ url_for('us.settings') }}"><b>설정</b><span>환율, 면세 한도, 관세율, 채널별 수수료, 목표 마진율.</span></a>
+</div>
+
+<div class="warn-box" style="margin-top:20px">
+  <b>시작 전 체크</b>: 사업자등록 + 통신판매업 신고, 해외구매대행 표기, 전기·어린이 제품의 구매대행 KC 요건, 각 마켓의 해외구매대행 카테고리 정책을 확인하세요. 아마존 상품 자동 크롤링은 아마존 이용약관에 어긋날 수 있어서 이 프로그램은 링크·CSV 기반으로 동작합니다.
+</div>
+{% endblock %}

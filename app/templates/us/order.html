@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}주문 처리 도우미{% endblock %}
+{% block content %}
+<h1>주문 처리 도우미</h1>
+<p class="lead">고객 주문 정보를 아마존 배송지 입력용 영문으로 바꿉니다. 휴대폰에서도 바로 쓸 수 있습니다.</p>
+<form class="form" method="post" style="max-width:none">
+  <div class="grid-form">
+    <label>받는 분 (한글)<input type="text" name="name" value="{{ form.get('name','') }}"></label>
+    <label>연락처<input type="text" name="phone" value="{{ form.get('phone','') }}" placeholder="010-1234-5678"></label>
+    <label>우편번호<input type="text" name="zip" value="{{ form.get('zip','') }}"></label>
+    <label>개인통관고유부호<input type="text" name="customs" value="{{ form.get('customs','') }}" placeholder="P123456789012"></label>
+  </div>
+  <label>도로명 주소<input type="text" name="addr" value="{{ form.get('addr','') }}" placeholder="서울특별시 강남구 테헤란로 152"></label>
+  <label>상세 주소<input type="text" name="detail" value="{{ form.get('detail','') }}" placeholder="101동 1203호"></label>
+  <button class="btn btn-primary" style="align-self:flex-start">영문 변환</button>
+</form>
+
+{% if result %}
+<div class="card">
+  <h3>아마존 배송지 입력값</h3>
+  <div class="kv">
+    <span>Full name</span><span class="v" id="r_name">{{ result.name }}</span>
+    <span>Phone</span><span class="v">{{ result.phone }}</span>
+    <span>Address line 1</span><span class="v" id="r_l1">{{ result.address_line1 }}</span>
+    <span>Address line 2</span><span class="v" id="r_l2">{{ result.address_line2 }}</span>
+    <span>City / Region</span><span class="v" id="r_city">{{ result.city_region }}</span>
+    <span>ZIP</span><span class="v">{{ result.zipcode }}</span>
+    <span>Country</span><span class="v">{{ result.country }}</span>
+  </div>
+  <textarea id="all" rows="5" style="margin-top:10px">{{ result.name }}
+{{ result.address_line1 }}{% if result.address_line2 %}, {{ result.address_line2 }}{% endif %}
+{{ result.city_region }} {{ result.zipcode }}
+{{ result.country }}
+{{ result.phone }}</textarea>
+  <div class="toolbar"><button class="btn" data-copy="all">전체 복사</button></div>
+  {% if code_ok is not none %}
+    <p><span class="pill {{ 'pill-ok' if code_ok else 'pill-block' }}">개인통관고유부호 {{ code }} : {{ '형식 정상' if code_ok else '형식 오류 (P + 숫자 12자리)' }}</span></p>
+  {% endif %}
+  <p class="small">자동 로마자 변환이라 틀릴 수 있습니다. 정확한 영문 주소는 '도로명주소 안내시스템(juso.go.kr)' 영문주소 검색과 꼭 비교하세요. 통관부호는 형식만 검사하며 이름 일치는 관세청(UNI-PASS)에서 확인해야 합니다.</p>
+</div>
+{% endif %}
+{% endblock %}

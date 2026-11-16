@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}② 후보 가져오기{% endblock %}
+{% block content %}
+<h1>② 후보 가져오기</h1>
+<p class="lead">GPT가 준 CSV, 엑셀 파일, 직접 입력 중 편한 방법을 쓰세요. 같은 ASIN은 한 번만 들어갑니다.</p>
+<p class="muted">필수: <b>상품명, 가격(usd)</b> · <a href="{{ url_for('us.sample_csv') }}">샘플 CSV 받기</a></p>
+
+<div class="two-col">
+  <form class="form card" method="post" enctype="multipart/form-data">
+    <h3>파일 업로드 (CSV / XLSX)</h3>
+    <input type="file" name="file" accept=".csv,.xlsx" required>
+    <button class="btn btn-primary">가져오기</button>
+  </form>
+
+  <form class="form card" method="post">
+    <h3>CSV 붙여넣기 (GPT 결과 그대로)</h3>
+    <textarea name="pasted" rows="7" placeholder="상품명,url,가격(usd),브랜드,..." required></textarea>
+    <button class="btn btn-primary">가져오기</button>
+  </form>
+</div>
+
+<form class="form card" method="post" style="max-width:none">
+  <h3>한 개씩 직접 추가</h3>
+  <div class="grid-form">
+    <label>영문 상품명<input type="text" name="single_title" required></label>
+    <label>아마존 URL<input type="text" name="single_url" placeholder="https://www.amazon.com/dp/..."></label>
+    <label>가격(USD)<input type="number" step="0.01" name="single_price" required></label>
+    <label>브랜드<input type="text" name="single_brand"></label>
+    <label><span><input type="checkbox" name="single_free" value="1" checked>한국 무료배송</span></label>
+  </div>
+  <button class="btn btn-primary" style="align-self:flex-start">추가</button>
+</form>
+
+<h2>인식하는 컬럼 이름</h2>
+<div class="table-wrap"><table>
+  <thead><tr><th>항목</th><th>사용 가능한 컬럼명</th></tr></thead>
+  <tbody>{% for k, v in aliases.items() %}<tr><td>{{ k }}</td><td>{{ v|join(', ') }}</td></tr>{% endfor %}</tbody>
+</table></div>
+<p class="small">예/아니오 값은 Y/N, 예/아니오, O/X 모두 됩니다. Keepa나 Helium10 등에서 내보낸 CSV도 컬럼명만 맞으면 그대로 들어갑니다.</p>
+{% endblock %}

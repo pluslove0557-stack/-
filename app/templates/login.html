@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}로그인{% endblock %}
+{% block content %}
+<h1>로그인</h1>
+<p class="lead">나만 쓰는 소싱 프로그램입니다.</p>
+<form class="form" method="post">
+  <label>비밀번호<input type="password" name="password" autofocus required></label>
+  {% if error %}<div class="flash flash-error">{{ error }}</div>{% endif %}
+  <button class="btn btn-primary">들어가기</button>
+</form>
+{% endblock %}
