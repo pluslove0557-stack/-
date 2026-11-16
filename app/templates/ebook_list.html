@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}나만의 전자책 스튜디오{% endblock %}
+{% block content %}
+<h1>나만의 전자책 스튜디오</h1>
+<p class="lead">내 경험을 10단계로 팔리는 전자책으로 만듭니다: 주제 추천 → 시장성 검증 → 리서치 → 목차 → 원고 → 휴먼터치 → 표지 → 본문 PDF → 판매페이지 → 광고소재.</p>
+
+{% if ai_on %}
+<span class="badge badge-ok">{{ mode }}: 주제·리서치·원고를 Claude가 작성합니다</span>
+{% else %}
+<span class="badge badge-warn">{{ mode }}: ANTHROPIC_API_KEY를 설정하면 AI가 원고를 씁니다. 지금은 직접 채워 쓰는 템플릿 초안이 만들어집니다.</span>
+{% endif %}
+
+<div class="ebook-grid">
+  <form class="form panel" method="post" action="{{ url_for('ebook.new') }}">
+    <h2 style="margin-top:0">새 전자책 만들기</h2>
+    <label>프로젝트 이름<input type="text" name="name" placeholder="예: 은퇴 후 내 인생 찾기"></label>
+    <label>나는 누구인가요? (독자에게 보일 저자 정체성)<input type="text" name="persona" placeholder="예: 두 아이를 키운 60대 엄마, 17년 차 연기 강사"></label>
+    <label>내 경험·노하우<textarea name="experience" rows="3" placeholder="예: 자녀 독립 후 공허함을 겪고 1년간 새 취미와 부업을 찾음"></textarea></label>
+    <label>관심 분야 / 쓰고 싶은 주제 (선택)<input type="text" name="interest" placeholder="예: 은퇴 후 삶, 육아, 성격 고민, 재테크"></label>
+    <label>표지에 넣을 저자명<input type="text" name="author_name" placeholder="예: 강작가"></label>
+    <button class="btn btn-primary" type="submit">시작하기</button>
+  </form>
+
+  <div class="panel">
+    <h2 style="margin-top:0">내 전자책</h2>
+    {% if not books %}<p class="muted">아직 만든 전자책이 없습니다.</p>{% endif %}
+    {% for b in books %}
+    <a class="book-row" href="{{ url_for('ebook.studio', bid=b.id) }}">
+      <span>{{ b.title }}</span>
+      <span class="progress"><span style="width: {{ b.progress * 10 }}%"></span></span>
+      <span class="muted">{{ b.progress }}/10</span>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

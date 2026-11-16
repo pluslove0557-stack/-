@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+{% block title %}전자책 스튜디오 - {{ book.name }}{% endblock %}
+{% block content %}
+<p><a class="muted" href="{{ url_for('ebook.index') }}">← 내 전자책 목록</a></p>
+<h1 id="bookTitle">{{ (book.toc or {}).get('title') or book.name }}</h1>
+<span class="badge {{ 'badge-ok' if ai_on else 'badge-warn' }}">{{ mode }}</span>
+
+<nav class="stepper" id="stepper">
+  {% for n, label in [(1,'주제'),(2,'시장성'),(3,'리서치'),(4,'목차'),(5,'원고'),(6,'휴먼터치'),(7,'표지'),(8,'본문 PDF'),(9,'판매페이지'),(10,'광고')] %}
+  <a href="#s{{ n }}" data-step="{{ n }}"><b>{{ n }}</b> {{ label }}</a>
+  {% endfor %}
+</nav>
+<p id="status" aria-live="polite"></p>
+
+<!-- 1 -->
+<section class="step panel" id="s1">
+  <h2>1. 주제 추천</h2>
+  <p class="muted">"모두를 위한 책"은 안 팔립니다. 내 경험과 뾰족한 독자가 만나는 주제를 고르세요.</p>
+  <div class="form">
+    <label>저자 정체성<input type="text" id="persona" value="{{ book.profile.persona }}"></label>
+    <label>경험·노하우<textarea id="experience" rows="2">{{ book.profile.experience }}</textarea></label>
+    <label>관심 분야<input type="text" id="interest" value="{{ book.profile.interest }}"></label>
+    <label>표지 저자명<input type="text" id="author_name" value="{{ book.profile.author_name }}"></label>
+  </div>
+  <div class="toolbar"><button class="btn btn-primary" data-act="topics">주제 10개 추천받기</button></div>
+  <div id="topicList"></div>
+  <details><summary class="muted">직접 주제 입력</summary>
+    <div class="form" style="margin-top:10px">
+      <input type="text" id="customTopic" placeholder="예: 자식 다 키운 뒤 내 인생 찾는 법">
+      <input type="text" id="customTarget" placeholder="핵심 독자 (예: 자녀가 독립한 50~60대 엄마)">
+      <input type="text" id="customPain" placeholder="독자의 고민 (예: 이제 나는 뭘 하며 살지?)">
+      <button class="btn" data-act="customTopic">이 주제로 확정</button>
+    </div>
+  </details>
+  <p id="chosenTopic" class="result"></p>
+</section>
+
+<!-- 2 -->
+<section class="step panel" id="s2">
+  <h2>2. 시장성 검증</h2>
+  <p class="muted">이 주제가 정말 팔릴지 데이터로 확인합니다. {% if ai_on %}Claude가 웹을 검색해 근거와 출처를 정리합니다.{% else %}아래 링크로 직접 수요를 확인하세요.{% endif %}</p>
+  <div class="toolbar"><button class="btn btn-primary" data-act="validate">시장성 검증하기</button></div>
+  <div id="validLinks"></div>
+  <div id="validReport" class="md"></div>
+</section>
+
+<!-- 3 -->
+<section class="step panel" id="s3">
+  <h2>3. 리서치</h2>
+  <p class="muted">원고의 품질을 높일 국내 자료·해외 논문·통계를 모읍니다. 직접 메모를 추가해도 됩니다.</p>
+  <div class="toolbar"><button class="btn btn-primary" data-act="research">자료 조사하기</button><button class="btn" data-act="saveResearch">메모 저장</button></div>
+  <textarea id="research" rows="12">{{ book.research }}</textarea>
+</section>
+
+<!-- 4 -->
+<section class="step panel" id="s4">
+  <h2>4. 제목·목차</h2>
+  <div class="form">
+    <label>목표 분량(쪽, 스마트폰 기준)<input type="number" id="pages" min="10" max="150" value="{{ book.pages }}"></label>
+  </div>
+  <div class="toolbar"><button class="btn btn-primary" data-act="toc">목차 만들기</button></div>
+  <div id="tocEditor"></div>
+  <div class="form" id="tocRevise" hidden>
+    <label>수정 요청 (휴먼 터치)<input type="text" id="revise" placeholder="예: 3장을 실제 사례 중심으로, 제목을 더 감성적으로"></label>
+    <div class="toolbar"><button class="btn" data-act="reviseToc">수정 요청 반영</button><button class="btn btn-primary" data-act="saveToc">직접 고친 내용 저장/확정</button></div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="step panel" id="s5">
+  <h2>5. 원고 작성</h2>
+  <div class="form"><label>문체 요청<input type="text" id="voice" placeholder="예: 친언니처럼 다정한 반말, 단호한 코치 말투"></label></div>
+  <div class="toolbar"><button class="btn btn-primary" data-act="writeAll">빈 장 모두 쓰기</button></div>
+  <div id="chapters"></div>
+</section>
+
+<!-- 6 -->
+<section class="step panel" id="s6">
+  <h2>6. 휴먼 터치 다듬기</h2>
+  <p class="muted">AI 티 나는 상투구를 걷어내고 사람이 쓴 글처럼 다듬습니다. 각 장의 원고는 5단계 편집창에서 직접 고칠 수도 있어요.</p>
+  <div class="form"><label>다듬기 요청<input type="text" id="humanizeReq" placeholder="예: 내 실제 경험담 톤으로, 문장을 더 짧게"></label></div>
+  <div class="toolbar"><button class="btn btn-primary" data-act="humanizeAll">전체 원고 다듬기</button></div>
+</section>
+
+<!-- 7 -->
+<section class="step panel" id="s7">
+  <h2>7. 표지 디자인</h2>
+  <p class="muted">저작권 걱정 없는 자체 생성 표지 3종 중 고르세요.</p>
+  <div class="form"><label>색 테마<select id="palette">
+    {% for k, p in palettes.items() %}<option value="{{ k }}" {{ 'selected' if book.design.palette == k }}>{{ p.name }}</option>{% endfor %}
+  </select></label></div>
+  <div class="toolbar"><button class="btn btn-primary" data-act="covers">표지 3종 만들기</button></div>
+  <div id="covers" class="cover-grid"></div>
+  <div id="mockup"></div>
+</section>
+
+<!-- 8 -->
+<section class="step panel" id="s8">
+  <h2>8. 본문 디자인 · PDF</h2>
+  <p class="muted">스마트폰에서 글자가 깨지지 않도록 한글 폰트를 내장하고 줄간격·여백을 맞춘 A5 PDF를 만듭니다. 폰트: <code>{{ font }}</code></p>
+  <div class="form"><label>본문 스타일<select id="bodyStyle">
+    <option value="comfort" {{ 'selected' if book.design.body == 'comfort' }}>넉넉하게 (모바일 추천)</option>
+    <option value="compact" {{ 'selected' if book.design.body == 'compact' }}>촘촘하게</option>
+  </select></label></div>
+  <div class="toolbar">
+    <button class="btn btn-primary" data-act="pdf">PDF 미리보기</button>
+    <a class="btn" href="{{ url_for('ebook.pdf', bid=book.id, download=1) }}">PDF 다운로드</a>
+    <a class="btn" href="{{ url_for('ebook.bundle', bid=book.id) }}">최종 결과물 zip</a>
+  </div>
+  <p class="muted">zip 안에는 PDF, 수정용 원고(manuscript.md), 표지, 3D 목업, 판매페이지, 광고 이미지가 들어 있습니다.</p>
+</section>
+
+<!-- 9 -->
+<section class="step panel" id="s9">
+  <h2>9. 판매 페이지</h2>
+  <div class="form">
+    <label>판매 가격(원)<input type="text" id="price" value="{{ book.price }}"></label>
+    <label>결제 링크 (크몽·스마트스토어·탈잉·토스페이 등 내 상품 주소)<input type="text" id="buyUrl" value="{{ book.buy_url }}" placeholder="https://"></label>
+  </div>
+  <div class="toolbar">
+    <button class="btn btn-primary" data-act="marketing">판매·광고 문구 만들기</button>
+    <a class="btn" target="_blank" href="{{ url_for('ebook.landing', bid=book.id) }}">판매페이지 미리보기</a>
+    <a class="btn" href="{{ url_for('ebook.landing', bid=book.id, download=1) }}">HTML 다운로드</a>
+  </div>
+  <p class="muted">받은 HTML 파일은 노션·아임웹·GitHub Pages·Netlify 등 아무 곳에나 올려 내 판매 페이지로 쓸 수 있습니다. 카드 수수료만 드는 직접 판매가 가능합니다.</p>
+  <div id="landingCopy"></div>
+</section>
+
+<!-- 10 -->
+<section class="step panel" id="s10">
+  <h2>10. 광고 소재 (인스타그램·페이스북)</h2>
+  <p class="muted">광고 이미지(1:1, 4:5)와 문구 3안입니다. 메타 광고관리자에서 새 광고를 만들고 이미지·문구를 붙여넣은 뒤, 링크에 판매페이지 주소를 넣으세요. (광고비 집행은 메타 광고관리자에서 직접 합니다.)</p>
+  <div id="ads" class="ad-grid"></div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const BID = {{ book.id|tojson }};
+const U = p => `/ebook/${BID}${p}`;
+let book = null;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function status(msg, err) { const s = $("status"); s.textContent = msg; s.style.color = err ? "var(--danger)" : ""; }
+async function api(path, body, label) {
+  status(label ? `${label} 중... (AI 모드는 1~3분 걸릴 수 있어요)` : "처리 중...");
+  const r = await fetch(U(path), {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body || {})});
+  const j = await r.json().catch(() => ({error: "서버 응답 오류"}));
+  if (!r.ok || j.error) { status(j.error || "오류가 발생했습니다.", true); throw new Error(j.error); }
+  status(label ? `${label} 완료` : "완료");
+  return j;
+}
+const saveFields = (obj) => api("/save", obj).then(j => markSteps());
+
+function md(text) {  // 미리보기용 간단 마크다운
+  return esc(text).split(/\n/).map(l => {
+    if (/^### /.test(l)) return `<h4>${l.slice(4)}</h4>`;
+    if (/^##? /.test(l)) return `<h3>${l.replace(/^#+ /, "")}</h3>`;
+    if (/^[-*] /.test(l)) return `<li>${l.slice(2)}</li>`;
+    if (/^&gt; /.test(l)) return `<blockquote>${l.slice(5)}</blockquote>`;
+    return l ? `<p>${l}</p>` : "";
+  }).join("").replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+}
+
+function markSteps() {
+  if (!book) return;
+  const n = book.toc ? book.toc.chapters.length : 0;
+  const done = {1: !!book.topic, 2: !!book.validation, 3: !!book.research, 4: !!book.toc,
+    5: n > 0 && Object.keys(book.chapters).length >= n, 6: !!book.polished, 7: !!book.design.style,
+    8: !!book.pdf_built, 9: !!book.copy, 10: !!book.copy};
+  document.querySelectorAll("#stepper a").forEach(a => a.classList.toggle("done", done[a.dataset.step]));
+}
+
+function profile() {
+  return {persona: $("persona").value, experience: $("experience").value, interest: $("interest").value, author_name: $("author_name").value};
+}
+
+// ---------- 렌더러
+function renderTopics() {
+  $("topicList").innerHTML = (book.topics || []).map((t, i) => `
+    <div class="topic-card ${book.topic && book.topic.title === t.title ? "selected" : ""}">
+      <div class="topic-head"><b>${esc(t.title)}</b><span class="score">${esc(t.score)}</span></div>
+      <div class="muted">독자: ${esc(t.target)} · 고민: ${esc(t.pain)}</div>
+      <div class="muted">${esc(t.why_sells)}</div>
+      <div class="muted">키워드: ${(t.keywords || []).map(esc).join(", ")}</div>
+      <button class="btn btn-link" data-act="pickTopic" data-i="${i}">이 주제로 선택</button>
+    </div>`).join("");
+  $("chosenTopic").textContent = book.topic ? `선택한 주제: ${book.topic.title}` : "";
+}
+function renderValidation() {
+  const v = book.validation; if (!v) return;
+  $("validLinks").innerHTML = `<div class="table-wrap"><table><thead><tr><th>키워드</th><th>유튜브</th><th>크몽</th><th>네이버</th><th>교보</th></tr></thead><tbody>${
+    v.links.map(l => `<tr><td>${esc(l.keyword)}</td>${["youtube","kmong","naver","kyobo"].map(k => `<td><a target="_blank" rel="noopener" href="${esc(l[k])}">열기</a></td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+  $("validReport").innerHTML = md(v.report);
+}
+function renderToc() {
+  const t = book.toc; if (!t) return;
+  $("tocRevise").hidden = false;
+  $("bookTitle").textContent = t.title;
+  $("tocEditor").innerHTML = `
+    <div class="form">
+      <label>제목<input type="text" id="tTitle" value="${esc(t.title)}"></label>
+      <label>부제<input type="text" id="tSub" value="${esc(t.subtitle)}"></label>
+      <label>후킹 문구<input type="text" id="tHook" value="${esc(t.hook)}"></label>
+      ${t.chapters.map((c, i) => `<fieldset><legend>${i + 1}장</legend>
+        <input type="text" class="chTitle" value="${esc(c.title)}">
+        <textarea class="chPoints" rows="3">${esc(c.points.join("\n"))}</textarea></fieldset>`).join("")}
+    </div>`;
+}
+function tocFromEditor() {
+  const titles = [...document.querySelectorAll(".chTitle")], pts = [...document.querySelectorAll(".chPoints")];
+  return {title: $("tTitle").value, subtitle: $("tSub").value, hook: $("tHook").value,
+    chapters: titles.map((el, i) => ({title: el.value, points: pts[i].value.split("\n").map(s => s.trim()).filter(Boolean)}))};
+}
+function renderChapters() {
+  const t = book.toc;
+  if (!t) { $("chapters").innerHTML = '<p class="muted">4단계에서 목차를 먼저 만드세요.</p>'; return; }
+  $("chapters").innerHTML = t.chapters.map((c, i) => {
+    const body = book.chapters[String(i)] || "";
+    return `<details class="chapter" ${!body ? "open" : ""}><summary><b>${i + 1}장. ${esc(c.title)}</b> <span class="muted">${body ? body.length.toLocaleString() + "자" : "미작성"}</span></summary>
+      <div class="toolbar"><button class="btn btn-primary" data-act="write" data-i="${i}">${body ? "다시 쓰기" : "이 장 쓰기"}</button>
+      <button class="btn" data-act="humanize" data-i="${i}">휴먼터치</button><button class="btn" data-act="saveCh" data-i="${i}">편집 저장</button></div>
+      <textarea class="chBody" id="body${i}" rows="14">${esc(body)}</textarea></details>`;
+  }).join("");
+}
+function renderCopy() {
+  const c = book.copy; if (!c) return;
+  const L = c.landing;
+  $("landingCopy").innerHTML = `<div class="prompt-card"><h3>${esc(L.headline)}</h3><p class="muted">${esc(L.subhead)}</p>
+    <b>고민</b><ul>${L.pains.map(x => `<li>${esc(x)}</li>`).join("")}</ul><b>얻는 것</b><ul>${L.benefits.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>`;
+  const v = Date.now();
+  $("ads").innerHTML = c.ads.map((a, i) => `<div class="prompt-card">
+    <h3>${i + 1}안 · ${esc(a.angle)}</h3>
+    <img src="${U(`/ad/${i}.png`)}?v=${v}" alt="광고 이미지 ${i + 1}" loading="lazy">
+    <p><a href="${U(`/ad/${i}.png`)}" download>1:1 이미지</a> · <a href="${U(`/ad/${i}.png`)}?ratio=4x5" download>4:5 이미지</a></p>
+    <p><b>본문</b><br>${esc(a.primary_text).replace(/\n/g, "<br>")}</p>
+    <p><b>헤드라인</b> ${esc(a.headline)} · <b>CTA</b> ${esc(a.cta)}</p>
+    <button class="btn btn-link" data-copy="${esc(a.primary_text)}">본문 복사</button></div>`).join("");
+}
+function showCovers(list) {
+  $("covers").innerHTML = list.map(c => `<figure class="cover ${book.design.style === c.style ? "selected" : ""}">
+    <img src="${c.url}" alt="${esc(c.name)} 표지"><figcaption>${esc(c.name)} <button class="btn btn-link" data-act="chooseCover" data-style="${c.style}">이 표지로 확정</button></figcaption></figure>`).join("");
+}
+function renderAll() { renderTopics(); renderValidation(); renderToc(); renderChapters(); renderCopy(); markSteps();
+  if (book.design.style) $("mockup").innerHTML = `<p class="result">확정한 표지의 3D 목업</p><img class="mock" src="${U("/img/mockup.png")}?v=${Date.now()}" alt="3D 목업">`; }
+
+// ---------- 액션
+const actions = {
+  async topics() { await saveFields({profile: profile()}); const j = await api("/topics", {}, "주제 추천"); book.topics = j.topics; renderTopics(); },
+  async pickTopic(el) { const j = await api("/select_topic", {index: +el.dataset.i}); book.topic = j.topic; renderTopics(); markSteps(); location.hash = "s2"; },
+  async customTopic() { const j = await api("/select_topic", {custom: $("customTopic").value, target: $("customTarget").value, pain: $("customPain").value}); book.topic = j.topic; renderTopics(); markSteps(); },
+  async validate() { const j = await api("/validate", {}, "시장성 검증"); book.validation = j; renderValidation(); markSteps(); },
+  async research() { const j = await api("/research", {}, "자료 조사"); book.research = j.research; $("research").value = j.research; markSteps(); },
+  async saveResearch() { book.research = $("research").value; await saveFields({research: book.research}); },
+  async toc() { await saveFields({research: $("research").value}); const j = await api("/toc", {pages: +$("pages").value}, "목차 생성"); book.toc = j.toc; renderToc(); renderChapters(); markSteps(); },
+  async reviseToc() { await saveFields({toc: tocFromEditor()}); const j = await api("/toc", {pages: +$("pages").value, revise: $("revise").value}, "목차 수정"); book.toc = j.toc; renderToc(); renderChapters(); },
+  async saveToc() { book.toc = tocFromEditor(); await saveFields({toc: book.toc, pages: +$("pages").value}); renderChapters(); status("목차를 확정했습니다. 5단계로 이동하세요."); },
+  async write(el) { const i = +el.dataset.i; const j = await api(`/chapter/${i}`, {voice: $("voice").value}, `${i + 1}장 원고 작성`); book.chapters[i] = j.body; renderChapters(); markSteps(); },
+  async writeAll() {
+    for (let i = 0; i < book.toc.chapters.length; i++) {
+      if (book.chapters[String(i)]) continue;
+      const j = await api(`/chapter/${i}`, {voice: $("voice").value}, `${i + 1}/${book.toc.chapters.length}장 원고 작성`);
+      book.chapters[String(i)] = j.body; renderChapters();
+    }
+    markSteps(); status("모든 장의 원고가 완성됐습니다.");
+  },
+  async saveCh(el) { const i = +el.dataset.i; book.chapters[i] = $(`body${i}`).value; await saveFields({chapter: {index: i, body: book.chapters[i]}}); renderChapters(); },
+  async humanize(el) { const i = +el.dataset.i; await saveFields({chapter: {index: i, body: $(`body${i}`).value}});
+    const j = await api(`/humanize/${i}`, {instructions: $("humanizeReq").value}, `${i + 1}장 다듬기`); book.chapters[i] = j.body; renderChapters(); },
+  async humanizeAll() {
+    for (let i = 0; i < book.toc.chapters.length; i++) {
+      if (!book.chapters[String(i)]) continue;
+      const j = await api(`/humanize/${i}`, {instructions: $("humanizeReq").value}, `${i + 1}장 다듬기`); book.chapters[String(i)] = j.body;
+    }
+    book = await (await fetch(U("/data"))).json(); renderChapters(); markSteps(); status("전체 원고를 다듬었습니다.");
+  },
+  async covers() { const j = await api("/covers", {palette: $("palette").value}, "표지 생성"); book.design.palette = $("palette").value; showCovers(j.covers); },
+  async chooseCover(el) {
+    const j = await api("/choose_cover", {style: el.dataset.style}, "표지 확정"); book.design.style = el.dataset.style;
+    document.querySelectorAll(".cover").forEach(f => f.classList.toggle("selected", f.querySelector("[data-style]").dataset.style === el.dataset.style));
+    $("mockup").innerHTML = `<p class="result">3D 목업</p><img class="mock" src="${j.mockup}" alt="3D 목업">`; markSteps();
+  },
+  async pdf() {
+    await saveFields({design: {body: $("bodyStyle").value}});
+    status("PDF 만드는 중...");
+    const r = await fetch(U("/pdf"));
+    if (!r.ok) { const j = await r.json(); status(j.error, true); return; }
+    window.open(URL.createObjectURL(await r.blob()), "_blank"); book.pdf_built = true; markSteps(); status("PDF 완성");
+  },
+  async marketing() { await saveFields({price: $("price").value, buy_url: $("buyUrl").value}); const j = await api("/marketing", {}, "판매·광고 문구 생성"); book.copy = j.copy; renderCopy(); markSteps(); },
+};
+
+document.addEventListener("click", async e => {
+  const c = e.target.closest("[data-copy]");
+  if (c) { navigator.clipboard.writeText(c.dataset.copy); status("복사했습니다."); return; }
+  const el = e.target.closest("[data-act]");
+  if (!el || !actions[el.dataset.act]) return;
+  el.disabled = true;
+  try { await actions[el.dataset.act](el); } catch (err) { console.error(err); } finally { el.disabled = false; }
+});
+["price", "buyUrl"].forEach(id => $(id).addEventListener("change", () => saveFields({price: $("price").value, buy_url: $("buyUrl").value})));
+
+fetch(U("/data")).then(r => r.json()).then(b => { book = b; renderAll(); });
+</script>
+{% endblock %}
