@@ -7,3 +7,5 @@ data/uploads/*
 data/outputs/*
 !data/outputs/.gitkeep
 .DS_Store
+data/sourcing.db
+data/.secret_key
