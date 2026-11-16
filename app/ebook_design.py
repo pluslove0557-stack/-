@@ -5,49 +5,94 @@ import io
 import json
 import os
 import re
+import threading
 import zipfile
+from contextlib import contextmanager
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 # ------------------------------------------------------------------ 폰트
 
-FONT_CANDIDATES = [
-    os.environ.get("EBOOK_FONT", ""),
-    "C:/Windows/Fonts/malgun.ttf",
-    "C:/Windows/Fonts/malgunbd.ttf",
-    "/System/Library/Fonts/AppleSDGothicNeo.ttc",
-    "/Library/Fonts/NanumGothic.ttf",
-    "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",
-    "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-    "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc",
-    "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",
-]
-BOLD_CANDIDATES = [
-    os.environ.get("EBOOK_FONT_BOLD", ""),
-    "C:/Windows/Fonts/malgunbd.ttf",
-    "/Library/Fonts/NanumGothicBold.ttf",
-    "/usr/share/fonts/truetype/nanum/NanumGothicBold.ttf",
-    "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
-]
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+USER_FONT_DIR = os.path.join(BASE_DIR, "data", "fonts")  # 여기에 .ttf를 넣으면 글꼴 목록에 추가된다
+
+# (표시 이름, 일반 후보 경로들, 굵게 후보 경로들)
+FONT_CATALOG = {
+    "nanum_gothic": ("나눔고딕", ["C:/Windows/Fonts/NanumGothic.ttf", "/Library/Fonts/NanumGothic.ttf", "~/Library/Fonts/NanumGothic.ttf",
+                                 "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"],
+                     ["C:/Windows/Fonts/NanumGothicBold.ttf", "/Library/Fonts/NanumGothicBold.ttf", "~/Library/Fonts/NanumGothicBold.ttf",
+                      "/usr/share/fonts/truetype/nanum/NanumGothicBold.ttf"]),
+    "nanum_myeongjo": ("나눔명조", ["C:/Windows/Fonts/NanumMyeongjo.ttf", "/Library/Fonts/NanumMyeongjo.ttf", "~/Library/Fonts/NanumMyeongjo.ttf",
+                                   "/usr/share/fonts/truetype/nanum/NanumMyeongjo.ttf"],
+                       ["C:/Windows/Fonts/NanumMyeongjoBold.ttf", "/Library/Fonts/NanumMyeongjoBold.ttf", "~/Library/Fonts/NanumMyeongjoBold.ttf",
+                        "/usr/share/fonts/truetype/nanum/NanumMyeongjoBold.ttf"]),
+    "nanum_pen": ("나눔손글씨 펜", ["C:/Windows/Fonts/NanumPen.ttf", "/Library/Fonts/NanumPen.ttf", "/usr/share/fonts/truetype/nanum/NanumPen.ttf"], []),
+    "malgun": ("맑은 고딕", ["C:/Windows/Fonts/malgun.ttf"], ["C:/Windows/Fonts/malgunbd.ttf"]),
+    "apple_sd": ("Apple SD 산돌고딕 Neo", ["/System/Library/Fonts/AppleSDGothicNeo.ttc"], []),
+    "noto_sans": ("Noto Sans CJK", ["/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc"],
+                  ["/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc", "/usr/share/fonts/noto-cjk/NotoSansCJK-Bold.ttc"]),
+    "wqy": ("WenQuanYi 정흑(기본 한글)", ["/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc"], []),
+}
 
 
 def _first_existing(paths):
     for p in paths:
+        p = os.path.expanduser(p or "")
         if p and os.path.exists(p):
             return p
     return None
 
 
-FONT_PATH = _first_existing(FONT_CANDIDATES)
-BOLD_PATH = _first_existing(BOLD_CANDIDATES) or FONT_PATH
+def available_fonts():
+    """{키: {"name", "regular", "bold"}} — 이 컴퓨터에 실제로 있는 한글 글꼴만."""
+    out = {}
+    env = os.environ.get("EBOOK_FONT")
+    if env and os.path.exists(env):
+        out["env"] = {"name": f"지정 글꼴 ({os.path.basename(env)})", "regular": env,
+                      "bold": _first_existing([os.environ.get("EBOOK_FONT_BOLD", "")]) or env}
+    for key, (name, regs, bolds) in FONT_CATALOG.items():
+        r = _first_existing(regs)
+        if r:
+            out[key] = {"name": name, "regular": r, "bold": _first_existing(bolds) or r}
+    if os.path.isdir(USER_FONT_DIR):
+        for f in sorted(os.listdir(USER_FONT_DIR)):
+            if f.lower().endswith((".ttf", ".otf", ".ttc")) and "bold" not in f.lower():
+                path = os.path.join(USER_FONT_DIR, f)
+                stem = os.path.splitext(f)[0]
+                bold = _first_existing([os.path.join(USER_FONT_DIR, stem + suf) for suf in ("Bold.ttf", "-Bold.ttf", "_Bold.ttf", "B.ttf")])
+                out["user_" + re.sub(r"[^a-z0-9]", "_", stem.lower())] = {"name": f"내 글꼴: {stem}", "regular": path, "bold": bold or path}
+    return out
+
+
+def fontset(key=None):
+    fonts = available_fonts()
+    if key in fonts:
+        return fonts[key]
+    return next(iter(fonts.values()), {"name": "기본", "regular": None, "bold": None})
 
 
 def font_status():
-    return FONT_PATH or "한글 폰트를 찾지 못함 (EBOOK_FONT 환경변수로 .ttf 경로 지정)"
+    fonts = available_fonts()
+    return ", ".join(f["name"] for f in fonts.values()) or "한글 폰트를 찾지 못함 (data/fonts/에 .ttf를 넣거나 EBOOK_FONT 지정)"
 
 
-def pil_font(size, bold=False):
-    path = BOLD_PATH if bold else FONT_PATH
+_local = threading.local()
+
+
+@contextmanager
+def use_font(key):
+    """이 블록 안의 모든 이미지/PDF 렌더링에 선택한 글꼴을 쓴다 (요청 스레드별)."""
+    prev = getattr(_local, "fs", None)
+    _local.fs = fontset(key)
+    try:
+        yield _local.fs
+    finally:
+        _local.fs = prev
+
+
+def pil_font(size, bold=False, fs=None):
+    fs = fs or getattr(_local, "fs", None) or fontset()
+    path = fs.get("bold" if bold else "regular")
     if path:
         try:
             return ImageFont.truetype(path, size)
@@ -65,7 +110,7 @@ PALETTES = {
     "paper": {"ink": "#c8553d", "name": "페이퍼", "bg": "#f4efe6", "bg2": "#e6dccb", "fg": "#2d2a26", "accent": "#c8553d"},
     "ocean": {"ink": "#2c5364", "name": "오션", "bg": "#0f2027", "bg2": "#2c5364", "fg": "#ffffff", "accent": "#7fdbff"},
 }
-STYLES = {"bold": "임팩트형", "minimal": "미니멀형", "classic": "클래식형"}
+STYLES = {"bold": "임팩트형", "poster": "포스터형", "minimal": "미니멀형", "classic": "클래식형"}
 
 
 def _hex(c):
@@ -154,6 +199,20 @@ def render_cover(title, subtitle, author, style="bold", palette="midnight", w=12
         d.line([(w / 2 - 80, h - 300), (w / 2 + 80, h - 300)], fill=accent, width=4)
         af = pil_font(46)
         d.text(((w - d.textlength(author, font=af)) / 2, h - 250), author, font=af, fill=fg)
+    elif style == "poster":
+        img = Image.new("RGB", (w, h), _hex(p["bg"]))
+        d = ImageDraw.Draw(img, "RGBA")
+        for i in range(-h, w, 90):  # 사선 줄무늬 배경
+            d.line([(i, h), (i + h, 0)], fill=_hex(p["bg2"]) + (90,), width=34)
+        band_top = int(h * 0.50)
+        d.rectangle([0, band_top, w, h], fill=_hex(p["bg2"]) + (235,))
+        sf, slines, ss = _fit_text(d, subtitle, w - 2 * margin, 200, 48, 28, bold=False, spacing=1.4)
+        _draw_lines(d, slines, sf, ss, margin, 150, fg, spacing=1.4)
+        f, lines, size = _fit_text(d, title, w - 2 * margin, int(h * 0.30), 150, 64)
+        _draw_lines(d, lines, f, size, margin, band_top + 70, _hex(p["bg"]) if p["fg"] == "#ffffff" else fg, spacing=1.18)
+        d.rectangle([margin, h - 230, margin + 160, h - 220], fill=accent)
+        af = pil_font(46, True)
+        d.text((margin, h - 190), author, font=af, fill=_hex(p["bg"]) if p["fg"] == "#ffffff" else fg)
     else:  # bold
         img = _gradient(w, h, p["bg"], p["bg2"])
         d = ImageDraw.Draw(img, "RGBA")
@@ -208,21 +267,27 @@ def png_bytes(img, fmt="PNG"):
 # ------------------------------------------------------------------ PDF 본문
 
 def _pdf_fonts():
+    """현재 선택된 글꼴을 reportlab에 등록. TrueType이 아니면 내장 CID 한글 글꼴로 대체."""
     from reportlab.pdfbase import pdfmetrics
     from reportlab.pdfbase.ttfonts import TTFont
     from reportlab.pdfbase.cidfonts import UnicodeCIDFont
-    if "EbookRegular" in pdfmetrics.getRegisteredFontNames():
-        return "EbookRegular", "EbookBold"
-    for name, path in (("EbookRegular", FONT_PATH), ("EbookBold", BOLD_PATH)):
+    fs = getattr(_local, "fs", None) or fontset()
+    names = []
+    for kind in ("regular", "bold"):
+        path = fs.get(kind)
         if not path:
             break
-        try:
-            pdfmetrics.registerFont(TTFont(name, path, subfontIndex=0) if path.endswith(".ttc") else TTFont(name, path))
-        except Exception:
-            break
-    else:
-        return "EbookRegular", "EbookBold"
-    pdfmetrics.registerFont(UnicodeCIDFont("HYGothic-Medium"))
+        name = "EB_" + re.sub(r"[^A-Za-z0-9]", "_", os.path.basename(path))
+        if name not in pdfmetrics.getRegisteredFontNames():
+            try:
+                pdfmetrics.registerFont(TTFont(name, path, subfontIndex=0) if path.lower().endswith(".ttc") else TTFont(name, path))
+            except Exception:
+                break
+        names.append(name)
+    if len(names) == 2:
+        return names[0], names[1]
+    if "HYGothic-Medium" not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(UnicodeCIDFont("HYGothic-Medium"))
     return "HYGothic-Medium", "HYGothic-Medium"
 
 
@@ -255,6 +320,7 @@ def build_pdf(book, cover_img, body_style="comfort", accent="#7c5cff"):
         "li": ParagraphStyle("li", fontName=reg, fontSize=base, leading=lead, leftIndent=12, bulletIndent=2, spaceAfter=2, wordWrap="CJK"),
         "quote": ParagraphStyle("quote", fontName=bold, fontSize=base, leading=lead, textColor=HexColor("#333333"), wordWrap="CJK"),
         "toc": ParagraphStyle("toc", fontName=reg, fontSize=12, leading=22, wordWrap="CJK"),
+        "cell": ParagraphStyle("cell", fontName=reg, fontSize=base - 1.5, leading=(base - 1.5) * 1.45, wordWrap="CJK"),
         "small": ParagraphStyle("small", fontName=reg, fontSize=9, leading=14, textColor=HexColor("#777777"), wordWrap="CJK"),
     }
     toc = book["toc"]
@@ -276,9 +342,16 @@ def build_pdf(book, cover_img, body_style="comfort", accent="#7c5cff"):
     story += [RLImage(cimg, cover_img.width * ratio, cover_img.height * ratio), PageBreak()]
 
     story += [Paragraph("목차", st["h1"])]
+    prologue = (book.get("chapters") or {}).get("prologue")
+    if prologue:
+        story.append(Paragraph("프롤로그", st["toc"]))
     for i, c in enumerate(toc["chapters"]):
         story.append(Paragraph(f"{i + 1}장 &nbsp; {html.escape(c['title'])}", st["toc"]))
     story.append(PageBreak())
+    if prologue:
+        story.append(Paragraph("프롤로그", st["h1"]))
+        story += _md_to_flowables(prologue, st, ac, fw, Paragraph, Spacer, Table, TableStyle, HexColor)
+        story.append(PageBreak())
 
     for i, c in enumerate(toc["chapters"]):
         story.append(Paragraph(f"{i + 1}장", st["h3"]))
@@ -295,6 +368,19 @@ def build_pdf(book, cover_img, body_style="comfort", accent="#7c5cff"):
     return buf.getvalue()
 
 
+def _check_item(text, st, fw, Paragraph, Table, TableStyle, HexColor):
+    """글꼴 글리프에 의존하지 않도록 체크박스를 벡터 사각형으로 그린다."""
+    from reportlab.graphics.shapes import Drawing, Rect
+    size = st["body"].fontSize * 0.85
+    box = Drawing(size + 2, size + 2)
+    box.add(Rect(1, 1, size, size, strokeColor=HexColor("#555555"), fillColor=None, strokeWidth=0.9))
+    t = Table([[box, Paragraph(text, st["body"])]], colWidths=[size + 8, fw - size - 8])
+    t.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"), ("LEFTPADDING", (0, 0), (-1, -1), 0),
+                           ("TOPPADDING", (0, 0), (0, 0), st["body"].leading * 0.22), ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+                           ("TOPPADDING", (1, 0), (1, 0), 0)]))
+    return t
+
+
 def _md_to_flowables(md, st, ac, fw, Paragraph, Spacer, Table, TableStyle, HexColor):
     out, para = [], []
 
@@ -303,9 +389,31 @@ def _md_to_flowables(md, st, ac, fw, Paragraph, Spacer, Table, TableStyle, HexCo
             out.append(Paragraph(_inline(" ".join(para)), st["body"]))
             para.clear()
 
+    rows = []
+
+    def flush_table():
+        if not rows:
+            return
+        ncol = max(len(r) for r in rows)
+        data = [[Paragraph(_inline(c), st["cell"]) for c in r + [""] * (ncol - len(r))] for r in rows]
+        t = Table(data, colWidths=[fw / ncol] * ncol, repeatRows=1)
+        t.setStyle(TableStyle([
+            ("GRID", (0, 0), (-1, -1), 0.5, HexColor("#cccccc")), ("BACKGROUND", (0, 0), (-1, 0), HexColor("#f1f1f5")),
+            ("VALIGN", (0, 0), (-1, -1), "TOP"), ("TOPPADDING", (0, 0), (-1, -1), 4), ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+        ]))
+        out.extend([Spacer(1, 4), t, Spacer(1, 8)])
+        rows.clear()
+
     for raw in (md or "").splitlines():
         line = raw.rstrip()
         s = line.strip()
+        if s.startswith("|") and s.endswith("|"):
+            flush()
+            cells = [c.strip() for c in s.strip("|").split("|")]
+            if not all(re.match(r"^:?-{2,}:?$", c) for c in cells if c):
+                rows.append(cells)
+            continue
+        flush_table()
         if not s:
             flush(); continue
         if s.startswith("### "):
@@ -313,7 +421,7 @@ def _md_to_flowables(md, st, ac, fw, Paragraph, Spacer, Table, TableStyle, HexCo
         elif s.startswith("## ") or s.startswith("# "):
             flush(); out.append(Paragraph(_inline(s.lstrip("#").strip()), st["h2"]))
         elif re.match(r"^[-*] \[[ xX]\] ", s):
-            flush(); out.append(Paragraph(_inline(s[6:]), st["li"], bulletText="□"))
+            flush(); out.append(_check_item(_inline(s[6:]), st, fw, Paragraph, Table, TableStyle, HexColor))
         elif re.match(r"^[-*] ", s):
             flush(); out.append(Paragraph(_inline(s[2:]), st["li"], bulletText="•"))
         elif re.match(r"^\d+[.)] ", s):
@@ -332,12 +440,15 @@ def _md_to_flowables(md, st, ac, fw, Paragraph, Spacer, Table, TableStyle, HexCo
         else:
             para.append(s)
     flush()
+    flush_table()
     return out
 
 
 def manuscript_markdown(book):
     toc = book["toc"]
     parts = [f"# {toc['title']}", f"_{toc['subtitle']}_", ""]
+    if (book.get("chapters") or {}).get("prologue"):
+        parts += ["# 프롤로그", "", book["chapters"]["prologue"], ""]
     for i, c in enumerate(toc["chapters"]):
         parts += [f"# {i + 1}장. {c['title']}", "", (book.get("chapters") or {}).get(str(i), ""), ""]
     return "\n".join(parts)
@@ -403,6 +514,46 @@ def render_ad(cover, hook, headline, palette="midnight", size=(1080, 1080)):
     img.paste(mock, ((W - mock.width) // 2, max(y + 10, H - mock.height - 130)), mask)
     hf, hl, hs = _fit_text(d, headline, W - 140, 110, 44, 28, spacing=1.3)
     _draw_lines(d, hl, hf, hs, 70, H - 40 - len(hl) * int(hs * 1.3), fg, "center", W - 140, 1.3)
+    return img
+
+
+# ------------------------------------------------------------------ 카드뉴스
+
+def render_card(title, body, page, total, palette="paper", style="note", size=(1080, 1350)):
+    """카드뉴스 한 장. style: note(노트에 손으로 쓴 느낌) / clean(단색 깔끔)."""
+    p = PALETTES.get(palette, PALETTES["paper"])
+    W, H = size
+    accent, ink = _hex(p["accent"]), _hex(p["ink"])
+    if style == "note":
+        img = Image.new("RGB", (W, H), (252, 250, 243))
+        d = ImageDraw.Draw(img, "RGBA")
+        for y in range(220, H - 80, 64):
+            d.line([(80, y), (W - 60, y)], fill=(170, 190, 220, 120), width=2)
+        d.line([(130, 0), (130, H)], fill=(230, 120, 120, 150), width=3)
+        for y in range(120, H, 230):  # 스프링 구멍
+            d.ellipse([28, y, 62, y + 34], fill=(220, 216, 205))
+        text_col, x0 = (40, 40, 48), 170
+        hl = accent if p["accent"] != "#ffffff" else _hex(p["bg2"])
+    else:
+        img = _gradient(W, H, p["bg"], p["bg2"])
+        d = ImageDraw.Draw(img, "RGBA")
+        text_col, x0, hl = _hex(p["fg"]), 90, accent
+    tf, tl, ts = _fit_text(d, title, W - x0 - 90, int(H * 0.30), 92, 48)
+    y = 230 if page == 1 else 170
+    if page == 1:
+        y = int(H * 0.30)
+    for line in tl:
+        tw = d.textlength(line, font=tf)
+        d.rectangle([x0 - 6, y + int(ts * 0.55), x0 + tw + 6, y + int(ts * 1.05)], fill=hl + (110,))  # 형광펜
+        d.text((x0, y), line, font=tf, fill=text_col)
+        y += int(ts * 1.3)
+    if body:
+        bf, bl, bs = _fit_text(d, body, W - x0 - 90, H - y - 200, 50, 30, bold=False, spacing=1.6)
+        _draw_lines(d, bl, bf, bs, x0, y + 50, text_col, spacing=1.6)
+    nf = pil_font(32)
+    d.text((W - 150, H - 90), f"{page}/{total}", font=nf, fill=text_col)
+    if page < total:
+        d.text((x0, H - 90), "넘겨보세요 →", font=nf, fill=ink if style == "note" else text_col)
     return img
 
 

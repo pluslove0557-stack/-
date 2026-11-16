@@ -189,3 +189,17 @@ img.mock { max-width: 420px; }
 .ad-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
 code { background: var(--panel-2); padding: 1px 6px; border-radius: 4px; font-size: 0.82rem; overflow-wrap: anywhere; }
 @media (max-width: 700px) { .stepper { position: static; } .step { scroll-margin-top: 20px; } }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px 14px; margin-bottom: 6px; }
+.form-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; }
+.form-grid .wide { grid-column: 1 / -1; }
+.chapter input, fieldset input + input { margin-top: 6px; }
+.ladder { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+.tier { background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; font-size: 0.9rem; }
+.tier p { margin: 6px 0 0; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.card-grid img { width: 100%; border-radius: 6px; display: block; }
+table.wrap td, table.wrap th { white-space: normal; min-width: 70px; }
+#statsTable input { min-width: 90px; }
+.step h3 { font-size: 1rem; margin-top: 22px; }
+.scroll-box { max-height: 460px; overflow: auto; }
+.scroll-box thead th { top: 0; }
