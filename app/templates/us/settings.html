@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}설정{% endblock %}
+{% block content %}
+<h1>설정</h1>
+<p class="lead">원가와 판매가 계산에 쓰이는 값입니다. 기본값은 대략치이니 내 계정 수수료와 현재 통관 기준으로 바꿔 주세요.</p>
+<form class="form" method="post" style="max-width:none">
+  <fieldset>
+    <legend>환율 · 통관</legend>
+    <div class="grid-form">
+      <label>원/달러 환율<input type="number" step="any" name="fx_rate" value="{{ s.fx_rate }}"></label>
+      <label>환율 버퍼(%) – 카드 해외결제 수수료 등<input type="number" step="any" name="fx_buffer_pct" value="{{ s.fx_buffer_pct }}"></label>
+      <label>미국발 면세 한도(USD)<input type="number" step="any" name="duty_free_usd" value="{{ s.duty_free_usd }}"></label>
+      <label>한도 초과 시 기본 관세율(%)<input type="number" step="any" name="default_duty_pct" value="{{ s.default_duty_pct }}"></label>
+      <label>부가세(%)<input type="number" step="any" name="vat_pct" value="{{ s.vat_pct }}"></label>
+      <label>무료배송 아닐 때 국제배송비(원)<input type="number" step="any" name="intl_ship_krw" value="{{ s.intl_ship_krw }}"></label>
+    </div>
+  </fieldset>
+  <fieldset>
+    <legend>마진</legend>
+    <div class="grid-form">
+      <label>목표 마진율(%)<input type="number" step="any" name="target_margin_pct" value="{{ s.target_margin_pct }}"></label>
+      <label>건당 기타비용(원) – CS/반품 적립<input type="number" step="any" name="domestic_cs_krw" value="{{ s.domestic_cs_krw }}"></label>
+      <label>판매가 올림 단위(원)<input type="number" step="1" name="round_to" value="{{ s.round_to }}"></label>
+    </div>
+  </fieldset>
+  <fieldset>
+    <legend>채널 수수료(%) – 카테고리별로 다르니 내 판매자센터 값으로</legend>
+    <div class="grid-form">
+      {% for key, ch in fees.items() %}<label>{{ ch.label }}<input type="number" step="any" name="fee_{{ key }}" value="{{ ch.fee_pct }}"></label>{% endfor %}
+    </div>
+  </fieldset>
+  <button class="btn btn-primary" style="align-self:flex-start">저장</button>
+</form>
+<p class="small">면세 한도와 관세율은 품목과 시기에 따라 다릅니다(미국발 목록통관 특례, 일반수입신고 품목 등). 관세청 고시를 확인하세요.</p>
+{% endblock %}

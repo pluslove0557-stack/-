@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}① 아이디어 → 키워드{% endblock %}
+{% block content %}
+<h1>① 아이디어 → 키워드</h1>
+<p class="lead">팔고 싶은 아이디어 하나만 넣으세요. 검색 키워드를 넓혀 주고, 바로 열어볼 검색 링크와 GPT에 붙여넣을 소싱 프롬프트를 만듭니다.</p>
+
+<form class="form" method="get">
+  <label>아이디어 (예: 테슬라, GMC, 고양이, 캠핑, 욕실)
+    <input type="text" name="idea" value="{{ idea }}" required>
+  </label>
+  <button class="btn btn-primary">키워드 만들기</button>
+</form>
+
+{% if rows %}
+<h2>확장 키워드 {{ rows|length }}개</h2>
+<div class="table-wrap"><table>
+  <thead><tr><th>키워드</th><th>아마존</th><th>월마트</th><th>네이버쇼핑(국내 경쟁 확인)</th><th>쿠팡</th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+    <tr><td>{{ r.kw }}</td>
+      <td><a href="{{ r.links.amazon }}" target="_blank" rel="noopener">검색</a> · <a href="{{ r.links.amazon_bestsellers_hint }}" target="_blank" rel="noopener">리뷰순</a></td>
+      <td><a href="{{ r.links.walmart }}" target="_blank" rel="noopener">검색</a></td>
+      <td><a href="{{ r.links.naver }}" target="_blank" rel="noopener">검색</a></td>
+      <td><a href="{{ r.links.coupang }}" target="_blank" rel="noopener">검색</a></td></tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+<p class="small">아마존에서 배송지를 한국으로 설정해 두면 상품 페이지에 'FREE Shipping to Korea / Import Fees Deposit'가 보이는 상품을 바로 골라낼 수 있습니다.</p>
+
+<h2>GPT 소싱 프롬프트</h2>
+<p class="muted">ChatGPT나 Claude에 붙여넣으면 후보를 CSV로 줍니다. 그 CSV를 <a href="{{ url_for('us.import_items') }}">② 가져오기</a>에 그대로 붙여넣으세요. <a href="{{ url_for('us.sales') }}">내 판매이력</a>을 넣어 두면 프롬프트에 예시로 자동 포함됩니다.</p>
+<textarea id="prompt" rows="18">{{ prompt }}</textarea>
+<div class="toolbar"><button class="btn" type="button" data-copy="prompt">프롬프트 복사</button></div>
+<div class="warn-box">GPT는 URL이나 가격을 지어낼 수 있습니다. 가져온 뒤 상품 페이지를 열어 가격, 한국 배송 여부, 무료배송을 꼭 직접 확인하세요.</div>
+{% endif %}
+{% endblock %}
