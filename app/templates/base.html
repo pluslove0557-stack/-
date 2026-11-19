@@ -21,6 +21,12 @@
     <a href="{{ url_for('us.order') }}">주문처리</a>
     <a href="{{ url_for('us.settings') }}">설정</a>
     <a href="{{ url_for('home.index') }}">도구모음</a>
+    <a href="{{ url_for('margin.index') }}">마진계산기</a>
+    <a href="{{ url_for('image.index') }}">이미지변환</a>
+    <a href="{{ url_for('listing.index') }}">상품등록</a>
+    <a href="{{ url_for('sourcing.index') }}">소싱스코어링</a>
+    <a href="{{ url_for('prompts.index') }}">이미지프롬프터</a>
+    <a href="{{ url_for('ebook.index') }}">전자책스튜디오</a>
     {% if session.get('authed') %}<a href="{{ url_for('auth.logout') }}">로그아웃</a>{% endif %}
   </nav>
 </header>

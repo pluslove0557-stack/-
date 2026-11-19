@@ -9,3 +9,7 @@ data/outputs/*
 .DS_Store
 data/sourcing.db
 data/.secret_key
+data/ebooks/
+data/fonts/*
+!data/fonts/.gitkeep
+data/.app_password

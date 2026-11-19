@@ -22,6 +22,7 @@ def create_app():
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY") or _load_or_create_secret(base_dir)
     app.config["UPLOAD_DIR"] = os.path.join(base_dir, "data", "uploads")
     app.config["OUTPUT_DIR"] = os.path.join(base_dir, "data", "outputs")
+    app.config["EBOOK_DIR"] = os.path.join(base_dir, "data", "ebooks")
     app.config["SAMPLE_DIR"] = os.path.join(base_dir, "data", "sample")
     app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50MB
     app.config["DB_PATH"] = os.environ.get("DB_PATH", os.path.join(base_dir, "data", "sourcing.db"))
@@ -29,6 +30,7 @@ def create_app():
 
     os.makedirs(app.config["UPLOAD_DIR"], exist_ok=True)
     os.makedirs(app.config["OUTPUT_DIR"], exist_ok=True)
+    os.makedirs(app.config["EBOOK_DIR"], exist_ok=True)
 
     from app.routes.home_routes import home_bp
     from app.routes.margin_routes import margin_bp
@@ -40,6 +42,7 @@ def create_app():
     from app.routes.pwa_routes import pwa_bp
     from app.auth import auth_bp, require_login
     from app import store
+    from app.routes.ebook_routes import ebook_bp
 
     app.register_blueprint(home_bp)
     app.register_blueprint(margin_bp, url_prefix="/margin")
@@ -53,5 +56,6 @@ def create_app():
 
     app.before_request(require_login)
     app.teardown_appcontext(store.close_db)
+    app.register_blueprint(ebook_bp, url_prefix="/ebook")
 
     return app

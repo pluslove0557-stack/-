@@ -17,7 +17,7 @@
   <a class="step" href="{{ url_for('us.import_items') }}"><b>② 후보 가져오기</b><span>GPT가 준 CSV, 엑셀, 직접 입력. ASIN 기준으로 중복은 자동으로 거릅니다.</span></a>
   <a class="step" href="{{ url_for('us.candidates') }}"><b>③ 자동 제외 + 점수</b><span>판매 불가 품목은 빼고, 원가·마진·수요·국내경쟁·배송조건·내 판매이력 유사도로 순위를 매깁니다.</span></a>
   <a class="step" href="{{ url_for('us.candidates', status='선정') }}"><b>④ 상품명·태그·상세</b><span>한국어 상품명(50자), 태그 10개, 구매대행 고지가 들어간 상세페이지를 만듭니다.</span></a>
-  <a class="step" href="{{ url_for('us.export_selected_status', status='선정') }}"><b>⑤ 등록용 엑셀</b><span>'선정' 상품을 채널별 판매가와 함께 엑셀로 받습니다. 기존 <a href="{{ url_for('listing.index') }}">상품등록 도우미</a>로 각 마켓 양식에 맞춥니다.</span></a>
+  <a class="step" href="{{ url_for('us.export_selected_status', status='선정') }}"><b>⑤ 등록용 엑셀</b><span>'선정' 상품을 채널별 판매가와 함께 엑셀로 받습니다. 상단 메뉴의 상품등록 도우미로 각 마켓 양식에 맞춥니다.</span></a>
   <a class="step" href="{{ url_for('us.order') }}"><b>⑥ 주문 처리</b><span>고객 한글 주소를 아마존 배송지용 영문으로 바꾸고 개인통관고유부호 형식을 검사합니다.</span></a>
 </div>
 
