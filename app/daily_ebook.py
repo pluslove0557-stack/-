@@ -25,9 +25,16 @@ import sys
 import zipfile
 from datetime import date
 
-from PIL import Image, ImageDraw
+# 그림·PDF 라이브러리는 만들 때만 필요하다. 내보내기(--export)는 파이썬 기본 기능만으로 동작한다.
+Image = ImageDraw = design = None
 
-from app import ebook_design as design
+
+def _load_render_libs():
+    global Image, ImageDraw, design
+    if design is None:
+        from PIL import Image as _Image, ImageDraw as _ImageDraw
+        from app import ebook_design as _design
+        Image, ImageDraw, design = _Image, _ImageDraw, _design
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DAILY_DIR = os.path.join(ROOT, "daily")
@@ -219,6 +226,7 @@ def market_text(spec, platform):
 # ------------------------------------------------------------------ 실행
 
 def build(spec_path):
+    _load_render_libs()
     spec = load_spec(spec_path)
     out = os.path.dirname(os.path.abspath(spec_path))
     slug = os.path.basename(out)
@@ -281,13 +289,92 @@ def mark_done(topic_id, folder, groble_product_id=""):
         json.dump(q, f, ensure_ascii=False, indent=2)
 
 
+# ------------------------------------------------------------------ 내 컴퓨터 폴더로 내보내기
+
+UNSAFE = re.compile(r'[\\/:*?"<>|\n\r\t]')
+
+
+def safe_name(text, limit=60):
+    """윈도우·맥에서 폴더/파일 이름으로 쓸 수 있게 다듬는다."""
+    name = UNSAFE.sub(" ", text).strip().rstrip(".")
+    return re.sub(r"\s+", " ", name)[:limit] or "전자책"
+
+
+EXPORT_FILES = [  # (원본, 내보낼 이름 — {t}는 제목)
+    ("ebook.pdf", "{t}.pdf"),
+    ("thumb_4x3.png", "썸네일_가로4x3.png"),
+    ("thumb_1x1.png", "썸네일_정사각1x1.png"),
+    ("cover.png", "표지.png"),
+    ("mockup_3d.png", "3D목업.png"),
+    ("detail_1_toc.png", "상세이미지1_목차.png"),
+    ("detail_2_for_whom.png", "상세이미지2_추천대상.png"),
+    ("kmong.md", "크몽_등록문구.txt"),
+    ("latpeed.md", "래피드_등록문구.txt"),
+    ("manuscript.md", "원고_수정용.md"),
+]
+
+
+def export(dest):
+    """daily/ 의 완성된 책을 dest/<날짜>_<제목>/ 으로 복사한다. 이미 있는 폴더는 건너뛴다."""
+    import shutil
+    os.makedirs(dest, exist_ok=True)
+    made = []
+    for folder in sorted(os.listdir(DAILY_DIR)):
+        src = os.path.join(DAILY_DIR, folder)
+        spec_path = os.path.join(src, "spec.json")
+        if not (os.path.isdir(src) and os.path.exists(spec_path) and os.path.exists(os.path.join(src, "ebook.pdf"))):
+            continue
+        with open(spec_path, encoding="utf-8") as f:
+            spec = json.load(f)
+        title = safe_name(spec["title"])
+        out = os.path.join(dest, f"{folder[:10]}_{title}")
+        if os.path.exists(out):
+            continue
+        os.makedirs(out)
+        for src_name, dst_name in EXPORT_FILES:
+            if os.path.exists(os.path.join(src, src_name)):
+                shutil.copy2(os.path.join(src, src_name), os.path.join(out, dst_name.format(t=title)))
+        groble_id = ""
+        if os.path.exists(QUEUE_PATH):
+            with open(QUEUE_PATH, encoding="utf-8") as f:
+                for t in json.load(f)["topics"]:
+                    if t.get("folder", "").endswith(folder):
+                        groble_id = t.get("groble_product_id", "")
+        info = [
+            f"제목: {spec['title']}",
+            f"부제: {spec['subtitle']}",
+            f"가격: {int(spec['price']):,}원",
+            f"검색 태그: {', '.join(spec.get('keywords', []))}",
+            f"대상 독자: {spec['target']}",
+            "",
+            "목차:",
+            *[f"  {i + 1}. {c['title']}" for i, c in enumerate(spec["chapters"])],
+            "",
+            f"그로블: https://groble.im/products/{groble_id}" if groble_id else "그로블: (아직 올리지 않음)",
+            "크몽: 크몽_등록문구.txt 를 복사해 붙여 넣고 썸네일_가로4x3.png, PDF 를 올리세요.",
+            "래피드: 래피드_등록문구.txt 를 복사해 붙여 넣고 썸네일, PDF 를 올리세요 (PDF 자동 판매 켜기).",
+            "",
+            "업로드 체크:  [ ] 크몽   [ ] 래피드",
+        ]
+        with open(os.path.join(out, "00_제목과_등록정보.txt"), "w", encoding="utf-8-sig") as f:
+            f.write("\n".join(info) + "\n")
+        made.append(out)
+    return made
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description="매일 전자책 1권 제작")
     ap.add_argument("spec", nargs="?", help="spec.json 경로")
     ap.add_argument("--next", action="store_true", help="다음 주제 출력")
     ap.add_argument("--done", nargs="+", metavar=("TOPIC_ID", "FOLDER"), help="주제를 완료로 표시: TOPIC_ID FOLDER [GROBLE_ID]")
+    ap.add_argument("--export", metavar="폴더", help="완성된 책을 이 폴더 아래 <날짜>_<제목>/ 으로 복사")
     a = ap.parse_args(argv)
-    if a.next:
+    if a.export:
+        made = export(a.export)
+        print(f"새로 만든 폴더 {len(made)}개")
+        for m in made:
+            print(" -", m)
+    elif a.next:
         print(json.dumps(next_topic(), ensure_ascii=False, indent=2))
     elif a.done:
         mark_done(*a.done[:3])
