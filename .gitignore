@@ -7,3 +7,6 @@ data/uploads/*
 data/outputs/*
 !data/outputs/.gitkeep
 .DS_Store
+data/ebooks/
+data/fonts/*
+!data/fonts/.gitkeep

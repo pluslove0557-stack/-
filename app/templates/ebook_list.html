@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}나만의 전자책 스튜디오{% endblock %}
+{% block content %}
+<h1>나만의 전자책 스튜디오</h1>
+<p class="lead">주제 → 시장성 → 리서치 → 목차 → 원고 → 휴먼터치 → 표지 → 본문 PDF → 판매페이지 → 광고 → 수익화·콘텐츠까지, 클릭 몇 번으로 전자책 한 권을 만들고 팔 준비를 합니다.</p>
+
+{% if ai_on %}
+<span class="badge badge-ok">{{ mode }}: 주제·리서치·원고·마케팅을 Claude가 작성합니다</span>
+{% else %}
+<span class="badge badge-warn">{{ mode }}: ANTHROPIC_API_KEY를 설정하면 AI가 원고를 씁니다. 지금은 직접 채워 쓰는 템플릿 초안이 만들어집니다.</span>
+{% endif %}
+
+<div class="ebook-grid">
+  <form class="form panel" method="post" action="{{ url_for('ebook.new') }}">
+    <h2 style="margin-top:0">새 전자책 만들기</h2>
+    <label>프로젝트 이름<input type="text" name="name" placeholder="예: 골프 입문 가이드"></label>
+    <label>관심 분야
+      <select name="category" id="category">
+        <option value="">선택 안 함 (자유 주제)</option>
+        {% for c in categories %}<option>{{ c }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>세부 분야<select name="subcategory" id="subcategory"><option value="">-</option></select></label>
+    <label>타깃 독자 수준
+      <select name="level">{% for k, v in levels.items() %}<option value="{{ k }}">{{ v }}</option>{% endfor %}</select>
+    </label>
+    <label>나는 누구인가요? (저자 정체성)<input type="text" name="persona" placeholder="예: 17년 차 연기 강사, 두 아이 키우는 경력단절 엄마"></label>
+    <label>내 경험·노하우 <span class="muted">(없으면 비워도 됩니다. 공부하며 정리하는 책도 팔립니다)</span>
+      <textarea name="experience" rows="3" placeholder="예: 자녀 독립 후 공허함을 겪고 1년간 새 취미와 부업을 찾음"></textarea></label>
+    <label>내 상황·제약 (선택)<input type="text" name="situation" placeholder="예: 하루 1시간만 가능, 1만 원대 상품부터 시작하고 싶음"></label>
+    <label>직접 쓰고 싶은 주제 (선택)<input type="text" name="interest" placeholder="예: 은퇴 후 삶, 대화법"></label>
+    <label>표지에 넣을 저자명<input type="text" name="author_name" placeholder="예: 강작가"></label>
+    <button class="btn btn-primary" type="submit">시작하기</button>
+  </form>
+
+  <div class="panel">
+    <h2 style="margin-top:0">내 전자책</h2>
+    {% if not books %}<p class="muted">아직 만든 전자책이 없습니다.</p>{% endif %}
+    {% for b in books %}
+    <a class="book-row" href="{{ url_for('ebook.studio', bid=b.id) }}">
+      <span>{{ b.title }}</span>
+      <span class="progress"><span style="width: {{ (b.progress * 100 / steps)|round }}%"></span></span>
+      <span class="muted">{{ b.progress }}/{{ steps }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const CATS = {{ categories|tojson }};
+const cat = document.getElementById("category"), sub = document.getElementById("subcategory");
+cat.addEventListener("change", () => {
+  sub.innerHTML = '<option value="">전체</option>' + (CATS[cat.value] || []).map(s => `<option>${s}</option>`).join("");
+});
+</script>
+{% endblock %}
