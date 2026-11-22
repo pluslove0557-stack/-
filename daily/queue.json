@@ -25,7 +25,10 @@
       "id": "ai-instagram",
       "title": "AI 인스타 카드뉴스 운영 30일",
       "target": "인스타 계정을 키우고 싶지만 매일 콘텐츠 만들 시간이 없는 1인 창업자",
-      "status": "pending"
+      "status": "done",
+      "date": "2026-11-22",
+      "folder": "daily/2026-11-22-ai-instagram",
+      "groble_product_id": "LYTAJS"
     },
     {
       "id": "ai-threads",
