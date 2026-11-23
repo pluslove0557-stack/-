@@ -34,7 +34,10 @@
       "id": "ai-threads",
       "title": "AI로 스레드 팔로워 1천 명 만들기",
       "target": "스레드를 시작했지만 무엇을 올릴지 모르는 초보",
-      "status": "pending"
+      "status": "done",
+      "date": "2026-11-23",
+      "folder": "daily/2026-11-23-ai-threads",
+      "groble_product_id": "QSebnF"
     },
     {
       "id": "ai-smartstore",
