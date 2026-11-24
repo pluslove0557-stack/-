@@ -209,10 +209,13 @@ def render_cover(title, subtitle, author, style="bold", palette="midnight", w=12
         sf, slines, ss = _fit_text(d, subtitle, w - 2 * margin, 200, 48, 28, bold=False, spacing=1.4)
         _draw_lines(d, slines, sf, ss, margin, 150, fg, spacing=1.4)
         f, lines, size = _fit_text(d, title, w - 2 * margin, int(h * 0.30), 150, 64)
-        _draw_lines(d, lines, f, size, margin, band_top + 70, _hex(p["bg"]) if p["fg"] == "#ffffff" else fg, spacing=1.18)
+        r, g, b = _hex(p["bg2"])[:3]
+        band_dark = (0.299 * r + 0.587 * g + 0.114 * b) < 140  # 띠가 어두우면 글자를 밝게
+        title_fill = _hex("#ffffff") if band_dark else (_hex(p["bg"]) if p["fg"] == "#ffffff" else fg)
+        _draw_lines(d, lines, f, size, margin, band_top + 70, title_fill, spacing=1.18)
         d.rectangle([margin, h - 230, margin + 160, h - 220], fill=accent)
         af = pil_font(46, True)
-        d.text((margin, h - 190), author, font=af, fill=_hex(p["bg"]) if p["fg"] == "#ffffff" else fg)
+        d.text((margin, h - 190), author, font=af, fill=title_fill)
     else:  # bold
         img = _gradient(w, h, p["bg"], p["bg2"])
         d = ImageDraw.Draw(img, "RGBA")

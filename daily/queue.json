@@ -43,7 +43,10 @@
       "id": "ai-smartstore",
       "title": "AI로 스마트스토어 상세페이지 만들기",
       "target": "상세페이지 디자인 비용이 부담되는 초보 셀러",
-      "status": "pending"
+      "status": "done",
+      "date": "2026-11-24",
+      "folder": "daily/2026-11-24-ai-smartstore",
+      "groble_product_id": "frQuge"
     },
     {
       "id": "ai-youtube-script",
