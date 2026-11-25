@@ -52,7 +52,10 @@
       "id": "ai-youtube-script",
       "title": "AI 유튜브 대본 쓰기 실전",
       "target": "유튜브를 시작하고 싶지만 대본 쓰기가 막막한 사람",
-      "status": "pending"
+      "status": "done",
+      "date": "2026-11-25",
+      "folder": "daily/2026-11-25-ai-youtube-script",
+      "groble_product_id": "uRA2dR"
     },
     {
       "id": "ai-excel",
