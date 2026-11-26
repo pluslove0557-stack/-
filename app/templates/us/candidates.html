@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}③ 후보 평가{% endblock %}
+{% block container_class %}container-wide{% endblock %}
+{% block content %}
+<h1>③ 후보 평가</h1>
+<p class="lead">점수가 높은 순서입니다. 판매 불가 규칙에 걸린 상품은 0점으로 흐리게 표시됩니다.</p>
+
+<div class="toolbar">
+  <a class="btn {% if not status %}btn-primary{% endif %}" href="{{ url_for('us.candidates') }}">전체</a>
+  {% for st in statuses %}<a class="btn {% if status == st %}btn-primary{% endif %}" href="{{ url_for('us.candidates', status=st) }}">{{ st }}</a>{% endfor %}
+  <a class="btn" href="{{ url_for('us.candidates', status=status, hide_blocked='0' if hide_blocked else '1') }}">{{ '판매불가 보이기' if hide_blocked else '판매불가 숨기기' }}</a>
+  <form method="post" action="{{ url_for('us.auto_exclude') }}" style="display:inline"><button class="btn">판매불가 {{ blocked_count }}개 → 제외로 이동</button></form>
+</div>
+
+{% if not rows %}
+  <p class="muted">아직 후보가 없습니다. <a href="{{ url_for('us.import_items') }}">② 가져오기</a>에서 추가하세요.</p>
+{% else %}
+<form method="post" action="{{ url_for('us.bulk') }}">
+  <div class="toolbar">
+    <select name="action" style="width:auto">
+      <option value="선정">선택 → 선정</option>
+      <option value="등록완료">선택 → 등록완료</option>
+      <option value="보류">선택 → 보류</option>
+      <option value="제외">선택 → 제외</option>
+      <option value="후보">선택 → 후보</option>
+      <option value="prompt">선택 → GPT 상품명 다듬기 프롬프트</option>
+      <option value="export">선택 → 등록용 엑셀</option>
+      <option value="delete">선택 → 삭제</option>
+    </select>
+    <button class="btn btn-primary">실행</button>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr>
+      <th><input type="checkbox" onclick="document.querySelectorAll('input[name=ids]').forEach(c=>c.checked=this.checked)"></th>
+      <th>점수</th><th>상품</th><th>USD</th><th>원가(원)</th><th>쿠팡 권장가</th><th>국내최저가 기준 마진</th>
+      <th>중국 대체 마진</th><th>판매이력 유사</th><th>표시</th><th>상태</th>
+    </tr></thead>
+    <tbody>
+    {% for r in rows %}{% set c = r.item %}{% set ev = r.ev %}
+      <tr class="{% if ev.blocked %}row-blocked{% endif %}">
+        <td><input type="checkbox" name="ids" value="{{ c.id }}"></td>
+        <td class="score">{{ ev.score }}</td>
+        <td style="white-space:normal;min-width:260px"><a href="{{ url_for('us.item', cid=c.id) }}">{{ c.title[:90] }}</a>
+          <div class="small">{{ c.brand or '-' }} · {{ c.category or '-' }}{% if c.reviews %} · 리뷰 {{ '{:,.0f}'.format(c.reviews) }}{% endif %}</div></td>
+        <td class="text-right">${{ '%.2f'|format(c.price_usd or 0) }}</td>
+        <td class="text-right">{{ '{:,}'.format(ev.cost.total_krw) }}</td>
+        <td class="text-right">{% set cp = ev.pricing|selectattr('key','equalto','coupang')|first %}{{ '{:,}'.format(cp.recommended_price) if cp and cp.recommended_price else '-' }}</td>
+        <td class="text-right">{% if ev.best_margin_at_kr_min is not none %}{{ ev.best_margin_at_kr_min }}%{% else %}<span class="small">최저가 미입력</span>{% endif %}</td>
+        <td class="text-right">{% if ev.china %}{{ ev.china.cn_margin }}%{% if ev.china.branded %} <span class="pill pill-warn">브랜드</span>{% endif %}{% else %}-{% endif %}</td>
+        <td class="text-right">{{ ev.affinity if ev.affinity is not none else '-' }}</td>
+        <td style="white-space:normal;min-width:160px">
+          {% if ev.us_only %}<span class="pill pill-us">미국전용 수요</span>{% endif %}
+          {% if c.free_ship_kr %}<span class="pill pill-ok">한국무료배송</span>{% endif %}
+          {% for f in ev.flags %}<span class="pill pill-{{ f.level }}">{{ f.label }}</span>{% endfor %}
+        </td>
+        <td>{{ c.status }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+</form>
+<p class="small">점수 = 마진 30% · 수요(리뷰·BSR) 20% · 국내경쟁 15% · 배송/반품 조건 15% · 브랜드/미국전용 10% · 내 판매이력 유사도 10% (판매이력이 없으면 그 비중은 마진으로 넘어갑니다).</p>
+{% endif %}
+{% endblock %}
