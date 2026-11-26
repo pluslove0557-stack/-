@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}수요 먼저 → 자체 브랜드{% endblock %}
+{% block content %}
+<h1>수요 먼저 → 자체 브랜드</h1>
+<p class="lead">아이디어부터가 아니라 <b>수요</b>부터 찾습니다. 뜨는 분야를 확인하고, 그 분야 크리에이터들이 반복해서 쓰는 물건을 찾아, 공장에서 소싱해 내 브랜드로 파는 흐름입니다.</p>
+
+<div class="steps">
+  <div class="step"><b>1. 수요 검증</b><span>구글 트렌드/네이버 데이터랩 CSV를 넣으면 상승·유지·하락과 계절성을 계산합니다.</span></div>
+  <div class="step"><b>2. 크리에이터 자막 분석</b><span>"day in the life", "브이로그" 영상 자막 여러 개 → 여러 명이 공통으로 말하는 물건 순위.</span></div>
+  <div class="step"><b>3. 공장 원가</b><span>알리바바/1688 단가·MOQ → 개당 원가, 마진, 초기 재고 자금, 몇 개 팔아야 회수되는지.</span></div>
+  <div class="step"><b>4. 브랜드·숏폼</b><span>브랜드명 후보 + 상표/도메인 확인 링크, '문제 → 해결' 15초 대본.</span></div>
+</div>
+
+<form class="form card" method="post">
+  <h3>새 분야 시작</h3>
+  <div class="grid-form">
+    <label>분야(니치)<input type="text" name="niche" placeholder="필라테스" required></label>
+    <label>영문 검색어 (해외 유튜브/트렌드용)<input type="text" name="keyword_en" placeholder="pilates"></label>
+  </div>
+  <button class="btn btn-primary" style="align-self:flex-start">만들기</button>
+</form>
+
+<h2>내 분야 {{ niches|length }}개</h2>
+{% if niches %}
+<div class="table-wrap"><table>
+  <thead><tr><th>분야</th><th>수요</th><th>찾은 제품</th><th>개당 이익</th><th>상태</th></tr></thead>
+  <tbody>{% for n in niches %}
+    <tr>
+      <td><a href="{{ url_for('trend.niche', nid=n.id) }}">{{ n.niche }}</a> <span class="small">{{ n.keyword_en }}</span></td>
+      <td>{% if n.trend %}{% for t in n.trend[:2] %}<span class="pill {{ 'pill-ok' if t.verdict == '상승' else ('pill-block' if t.verdict == '하락' else 'pill-warn') }}">{{ t.keyword }} {{ t.verdict }}</span>{% endfor %}{% else %}<span class="small">-</span>{% endif %}</td>
+      <td>{{ n.product_ko or n.product_en or '-' }}</td>
+      <td class="text-right">{{ ('{:,}'.format(n.profit) ~ '원') if n.profit is not none else '-' }}</td>
+      <td>{{ n.status }}</td>
+    </tr>{% endfor %}
+  </tbody>
+</table></div>
+{% else %}<p class="muted">아직 없습니다.</p>{% endif %}
+
+<div class="warn-box" style="margin-top:18px">
+  참고한 릴스는 "투자 0원으로 30일 만에 $3M"이라고 하지만 확인되지 않은 주장입니다. 구매대행과 달리 이 방식은 <b>재고를 먼저 사야</b>(MOQ) 해서 돈이 묶이고, 숏폼이 안 터지면 광고비가 들어갑니다. 3단계에서 회수 수량을 꼭 확인하세요.
+</div>
+{% endblock %}

@@ -37,6 +37,7 @@ def create_app():
     from app.routes.sourcing_routes import sourcing_bp
     from app.routes.prompts_routes import prompts_bp
     from app.routes.us_routes import us_bp
+    from app.routes.trend_routes import trend_bp
     from app.routes.pwa_routes import pwa_bp
     from app.auth import auth_bp, require_login
     from app import store
@@ -48,6 +49,7 @@ def create_app():
     app.register_blueprint(sourcing_bp, url_prefix="/sourcing")
     app.register_blueprint(prompts_bp, url_prefix="/prompts")
     app.register_blueprint(us_bp, url_prefix="/us")
+    app.register_blueprint(trend_bp, url_prefix="/trend")
     app.register_blueprint(pwa_bp)
     app.register_blueprint(auth_bp)
 

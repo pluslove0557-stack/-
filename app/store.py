@@ -16,6 +16,12 @@ CREATE TABLE IF NOT EXISTS candidates (
   data TEXT NOT NULL,
   memo TEXT DEFAULT ''
 );
+CREATE TABLE IF NOT EXISTS niches (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  created_at REAL NOT NULL,
+  status TEXT NOT NULL DEFAULT '검증중',
+  data TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS sales (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   title TEXT NOT NULL,
@@ -133,4 +139,44 @@ def sales_titles():
 def clear_sales():
     conn = db()
     conn.execute("DELETE FROM sales")
+    conn.commit()
+
+
+# --- niches (수요 먼저 → 자체 브랜드) ----------------------------------------
+NICHE_STATUSES = ["검증중", "유망", "샘플주문", "런칭", "보류"]
+
+
+def add_niche(data):
+    conn = db()
+    cur = conn.execute("INSERT INTO niches(created_at, data) VALUES(?, ?)",
+                       (time.time(), json.dumps(data, ensure_ascii=False)))
+    conn.commit()
+    return cur.lastrowid
+
+
+def list_niches():
+    rows = db().execute("SELECT * FROM niches ORDER BY id DESC").fetchall()
+    return [{"id": r["id"], "status": r["status"], **json.loads(r["data"])} for r in rows]
+
+
+def get_niche(nid):
+    r = db().execute("SELECT * FROM niches WHERE id = ?", (nid,)).fetchone()
+    if not r:
+        return None
+    return {"id": r["id"], "status": r["status"], **json.loads(r["data"])}
+
+
+def update_niche(nid, data=None, status=None):
+    conn = db()
+    if data is not None:
+        clean = {k: v for k, v in data.items() if k not in ("id", "status")}
+        conn.execute("UPDATE niches SET data = ? WHERE id = ?", (json.dumps(clean, ensure_ascii=False), nid))
+    if status is not None:
+        conn.execute("UPDATE niches SET status = ? WHERE id = ?", (status, nid))
+    conn.commit()
+
+
+def delete_niche(nid):
+    conn = db()
+    conn.execute("DELETE FROM niches WHERE id = ?", (nid,))
     conn.commit()

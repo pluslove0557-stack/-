@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block title %}{{ n.niche }} · 수요→브랜드{% endblock %}
+{% block container_class %}container-wide{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('trend.index') }}">← 분야 목록</a></p>
+<h1>{{ n.niche }} <span class="small">{{ n.keyword_en }}</span></h1>
+
+<form method="post" action="{{ url_for('trend.save', nid=n.id) }}" class="toolbar">
+  <input type="hidden" name="step" value="status">
+  <select name="status" style="width:auto">{% for s in statuses %}<option {% if n.status == s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+  <input type="text" name="memo" value="{{ n.memo or '' }}" placeholder="메모" style="max-width:360px">
+  <button class="btn">상태 저장</button>
+</form>
+
+<!-- 1. 수요 -->
+<h2 id="demand">1. 수요 검증</h2>
+<p class="muted">아래 링크에서 최근 5년 그래프를 열고 <b>다운로드(⤓) → CSV</b>로 받은 내용을 그대로 붙여넣으세요. 비교할 키워드를 여러 개 넣고 받으면 한 번에 비교됩니다.</p>
+<div class="toolbar">
+  <a class="btn" href="{{ links.google_trends_kr }}" target="_blank" rel="noopener">구글 트렌드(한국)</a>
+  <a class="btn" href="{{ links.google_trends_world }}" target="_blank" rel="noopener">구글 트렌드(전 세계)</a>
+  <a class="btn" href="{{ links.naver_datalab }}" target="_blank" rel="noopener">네이버 데이터랩</a>
+  <a class="btn" href="{{ links.naver_shopping_insight }}" target="_blank" rel="noopener">네이버 쇼핑인사이트</a>
+</div>
+<form class="form" method="post" action="{{ url_for('trend.save', nid=n.id) }}" style="max-width:none">
+  <input type="hidden" name="step" value="demand">
+  <label>영문 검색어<input type="text" name="keyword_en" value="{{ n.keyword_en or '' }}"></label>
+  <label>트렌드 CSV<textarea name="trend_csv" rows="5" placeholder="Week,pilates: (Worldwide)&#10;2021-11-28,45&#10;..."></textarea></label>
+  <button class="btn btn-primary" style="align-self:flex-start">분석</button>
+</form>
+{% if n.trend %}
+<div class="table-wrap"><table>
+  <thead><tr><th>키워드</th><th>판정</th><th>최근 1년 vs 전년</th><th>처음 vs 최근</th><th>1년 추세</th><th>계절성</th><th>최고점</th><th>그래프</th></tr></thead>
+  <tbody>{% for t in n.trend %}
+    <tr>
+      <td>{{ t.keyword }}</td>
+      <td><span class="pill {{ 'pill-ok' if t.verdict == '상승' else ('pill-block' if t.verdict == '하락' else 'pill-warn') }}">{{ t.verdict }}</span></td>
+      <td class="text-right">{{ (t.yoy_pct ~ '%') if t.yoy_pct is not none else '-' }}</td>
+      <td class="text-right">{{ t.growth_pct }}%</td>
+      <td class="text-right">{{ t.slope_pct_year }}%</td>
+      <td class="text-right">{{ t.seasonality_pct }}%</td>
+      <td>{{ t.peak }} <span class="small">({{ t.peak_date }})</span></td>
+      <td>{% set mx = (t.spark|max) or 1 %}<svg width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="{{ t.keyword }} 추이"><polyline fill="none" stroke="#a78bfa" stroke-width="1.5" points="{% for v in t.spark %}{{ (loop.index0 * 160 / ((t.spark|length - 1) or 1))|round(1) }},{{ (31 - v / mx * 30)|round(1) }} {% endfor %}"/></svg></td>
+    </tr>{% endfor %}
+  </tbody>
+</table></div>
+<p class="small">계절성이 40%를 넘으면 특정 시즌에만 팔리는 분야입니다. 재고를 사는 방식이라 시즌 끝물에 들어가면 위험합니다.</p>
+{% endif %}
+
+<!-- 2. 크리에이터 -->
+<h2 id="creators">2. 크리에이터 자막 → 반복해서 쓰는 물건</h2>
+<p class="muted">구독자가 적은 크리에이터일수록 협찬이 아니라 실제로 쓰는 물건이 나옵니다. 영상 3~8개의 자막(유튜브 '스크립트 표시')을 복사해서 <b>영상 사이에 --- 한 줄</b>을 넣어 붙여넣으세요.</p>
+<div class="toolbar">
+  <a class="btn" href="{{ links.youtube_vlog_en }}" target="_blank" rel="noopener">day in the life (영문)</a>
+  <a class="btn" href="{{ links.youtube_vlog_ko }}" target="_blank" rel="noopener">브이로그 (한글)</a>
+  <a class="btn" href="{{ links.youtube_bag }}" target="_blank" rel="noopener">what's in my bag</a>
+  <a class="btn" href="{{ links.youtube_essentials }}" target="_blank" rel="noopener">essentials</a>
+</div>
+<form class="form" method="post" action="{{ url_for('trend.save', nid=n.id) }}" style="max-width:none">
+  <input type="hidden" name="step" value="creators">
+  <textarea name="transcripts" rows="8" placeholder="첫 번째 영상 자막...&#10;---&#10;두 번째 영상 자막...">{{ n.transcripts or '' }}</textarea>
+  <button class="btn btn-primary" style="align-self:flex-start">반복 단어 찾기</button>
+</form>
+{% if n.terms %}
+<div class="card">
+  <h3>여러 명이 공통으로 말한 단어 ({{ transcript_count }}개 자막 기준)</h3>
+  {% for t in n.terms %}<span class="pill {{ 'pill-ok' if t.product_like else 'pill-us' }}" title="{{ t.mentions }}번 언급">{{ t.term }} · {{ t.creators }}명</span>{% endfor %}
+  <p class="small">초록색 = 물건일 가능성이 높은 단어. 숫자 = 그 단어를 말한 영상 수.</p>
+</div>
+{% endif %}
+{% if t_prompt %}
+<details class="card"><summary>GPT로 더 정확하게 뽑기 (프롬프트)</summary>
+  <textarea id="tprompt" rows="10" style="margin-top:8px">{{ t_prompt }}</textarea>
+  <div class="toolbar"><button class="btn" type="button" data-copy="tprompt">복사</button></div>
+</details>
+{% endif %}
+
+<!-- 제품 정하기 -->
+<h2 id="product">3. 제품 정하고 공장 원가 보기</h2>
+<form class="form card" method="post" action="{{ url_for('trend.save', nid=n.id) }}" style="max-width:none">
+  <input type="hidden" name="step" value="product">
+  <div class="grid-form">
+    <label>제품(영문, 공장 검색용)<input type="text" name="product_en" value="{{ n.product_en or '' }}" placeholder="pilates grip socks"></label>
+    <label>제품(한글)<input type="text" name="product_ko" value="{{ n.product_ko or '' }}" placeholder="필라테스 논슬립 양말"></label>
+    <label>해결하는 문제<input type="text" name="problem" value="{{ n.problem or '' }}" placeholder="리포머 위에서 발이 미끄러짐"></label>
+    <label>해결 결과<input type="text" name="solution" value="{{ n.solution or '' }}" placeholder="동작이 흔들리지 않음"></label>
+    <label>타깃<input type="text" name="target" value="{{ n.target or '' }}" placeholder="필라테스 다니는 20~30대"></label>
+    <label>브랜드명(정했으면)<input type="text" name="brand" value="{{ n.brand or '' }}"></label>
+    <label>브랜드 느낌
+      <select name="feeling">{% for fe in feelings %}<option value="{{ fe }}" {% if n.feeling == fe %}selected{% endif %}>{{ {'grip':'안정·접지','calm':'차분·편안','strong':'강함·코어','clean':'깔끔·순수','warm':'따뜻·포근'}[fe] }}</option>{% endfor %}</select>
+    </label>
+  </div>
+  <button class="btn btn-primary" style="align-self:flex-start">저장</button>
+</form>
+{% if n.product_en or n.product_ko %}
+<div class="toolbar">
+  <a class="btn" href="{{ src_links.alibaba }}" target="_blank" rel="noopener">알리바바(공장 단가·MOQ)</a>
+  <a class="btn" href="{{ src_links.aliexpress }}" target="_blank" rel="noopener">알리익스프레스(소매가)</a>
+  <a class="btn" href="{{ src_links.amazon }}" target="_blank" rel="noopener">아마존(미국 판매가·리뷰)</a>
+  <a class="btn" href="{{ src_links.coupang }}" target="_blank" rel="noopener">쿠팡(국내 경쟁)</a>
+  <a class="btn" href="{{ src_links.naver }}" target="_blank" rel="noopener">네이버쇼핑(국내 경쟁)</a>
+  <a class="btn" href="{{ url_for('us.ideas', idea=n.product_en or n.product_ko) }}">미국 구매대행 키워드로 보기</a>
+</div>
+{% endif %}
+
+<div class="two-col" id="pl">
+  <form class="form card" method="post" action="{{ url_for('trend.save', nid=n.id) }}" style="max-width:none">
+    <h3>사입(재고) 원가 입력</h3>
+    <input type="hidden" name="step" value="pl">
+    <div class="grid-form">
+      {% for key, label, kind in pl_fields %}
+      <label>{{ label }}<input type="{{ 'text' if kind == 'text' else 'number' }}" {% if kind == 'number' %}step="any"{% endif %} name="{{ key }}" value="{{ pl.inputs[key] }}"></label>
+      {% endfor %}
+    </div>
+    <button class="btn btn-primary" style="align-self:flex-start">계산</button>
+  </form>
+  <div class="card">
+    <h3>결과 (1개 기준)</h3>
+    <div class="kv">
+      <span>공장 단가</span><span class="v">{{ '{:,}'.format(pl.factory_krw) }}원</span>
+      <span>국제 운송</span><span class="v">{{ '{:,}'.format(pl.freight_krw) }}원</span>
+      <span>관세</span><span class="v">{{ '{:,}'.format(pl.duty_krw) }}원</span>
+      <span>포장·라벨</span><span class="v">{{ '{:,}'.format(pl.packaging_krw) }}원</span>
+      <span class="total">입고 원가</span><span class="v total">{{ '{:,}'.format(pl.landed_krw) }}원 <span class="small">(판매가의 1/{{ pl.markup_x }})</span></span>
+      <span>마켓 수수료</span><span class="v">-{{ '{:,}'.format(pl.fee_krw) }}원</span>
+      <span>반품·불량 적립</span><span class="v">-{{ '{:,}'.format(pl.returns_krw) }}원</span>
+      <span>국내 택배</span><span class="v">-{{ '{:,}'.format(pl.ship_krw) }}원</span>
+      <span>광고비</span><span class="v">-{{ '{:,}'.format(pl.inputs.ad_per_sale|int) }}원</span>
+      <span class="total">개당 순이익</span><span class="v total {{ 'result' if pl.profit_krw > 0 else '' }}">{{ '{:,}'.format(pl.profit_krw) }}원 ({{ pl.margin_pct }}%)</span>
+    </div>
+    <div class="kv" style="margin-top:12px">
+      <span>1건당 광고비 한도 (넘으면 적자)</span><span class="v">{{ '{:,}'.format(pl.max_ad_per_sale) }}원</span>
+      <span>첫 재고 자금 (MOQ {{ pl.inputs.moq|int }}개)</span><span class="v">{{ '{:,}'.format(pl.inventory_capital) }}원</span>
+      <span class="total">처음에 필요한 돈</span><span class="v total">{{ '{:,}'.format(pl.upfront) }}원</span>
+      <span>투자금 회수까지 판매 수</span><span class="v">{{ ('{:,}'.format(pl.payback_units) ~ '개') if pl.payback_units else '회수 불가' }}</span>
+      <span>MOQ 전부 팔았을 때 순이익</span><span class="v">{{ '{:,}'.format(pl.moq_total_profit) }}원</span>
+    </div>
+    {% if not pl.payback_within_moq %}<p class="warn-box" style="margin-top:10px">첫 주문 수량(MOQ)을 다 팔아도 처음 들어간 돈을 못 돌려받습니다. 판매가·광고비·MOQ를 다시 보세요.</p>{% endif %}
+    <p class="small" style="margin-top:8px">관세율은 품목(HS코드)마다 다릅니다(양말 등 의류 13% 내외, FTA 원산지증명 시 감면 가능). 수입 부가세 10%는 일반과세자면 환급되므로 원가에서 뺐습니다.</p>
+  </div>
+</div>
+
+<!-- 4. 브랜드 · 숏폼 -->
+<h2 id="brand">4. 브랜드명 · 숏폼 대본</h2>
+{% if brands %}
+<div class="table-wrap"><table>
+  <thead><tr><th>브랜드명 후보</th><th>확인</th></tr></thead>
+  <tbody>{% for b in brands %}<tr><td><b>{{ b.name }}</b></td>
+    <td><a href="{{ b.kipris }}" target="_blank" rel="noopener">상표(KIPRIS)</a> · <a href="{{ b.domain }}" target="_blank" rel="noopener">.com 도메인</a> · <a href="{{ b.insta }}" target="_blank" rel="noopener">인스타 아이디</a></td></tr>{% endfor %}
+  </tbody>
+</table></div>
+<p class="small">출원 전에 KIPRIS에서 같은 류(예: 양말 25류)에 비슷한 상표가 있는지 꼭 확인하세요. 공장 사진을 그대로 쓰지 말고 직접 찍은 사진·영상을 쓰세요.</p>
+{% else %}<p class="muted">3단계에서 영문 제품명을 저장하면 브랜드명 후보가 나옵니다.</p>{% endif %}
+
+<h3>'문제 → 해결' 15초 숏폼 대본 3개</h3>
+{% for s in scripts %}
+<div class="card">
+  <div class="table-wrap"><table>
+    <thead><tr><th>구간</th><th>자막/말</th><th>화면</th></tr></thead>
+    <tbody>{% for sec, line, shot in s %}<tr><td>{{ sec }}</td><td style="white-space:normal">{{ line }}</td><td style="white-space:normal" class="small">{{ shot }}</td></tr>{% endfor %}</tbody>
+  </table></div>
+</div>
+{% endfor %}
+<details class="card"><summary>GPT로 브랜드명·훅 더 받기 (프롬프트)</summary>
+  <textarea id="bprompt" rows="9" style="margin-top:8px">{{ b_prompt }}</textarea>
+  <div class="toolbar"><button class="btn" type="button" data-copy="bprompt">복사</button></div>
+</details>
+
+<form method="post" action="{{ url_for('trend.save', nid=n.id) }}" onsubmit="return confirm('이 분야를 삭제할까요?')" style="margin-top:24px">
+  <input type="hidden" name="step" value="delete"><button class="btn">이 분야 삭제</button>
+</form>
+{% endblock %}
