@@ -61,7 +61,10 @@
       "id": "ai-excel",
       "title": "AI로 엑셀 업무 자동화 입문",
       "target": "반복 엑셀 업무에 시간을 뺏기는 직장인",
-      "status": "pending"
+      "status": "done",
+      "date": "2026-11-26",
+      "folder": "daily/2026-11-26-ai-excel",
+      "groble_product_id": "vdFBHN"
     },
     {
       "id": "ai-image-goods",
