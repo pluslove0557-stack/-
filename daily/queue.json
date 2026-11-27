@@ -1,0 +1,217 @@
+{
+  "series": "AI·부업 실전 가이드",
+  "price": 10000,
+  "groble_settings": {
+    "isReviewVisible": true,
+    "isBuyerCountPublic": true,
+    "isSearchExposed": true
+  },
+  "existing_groble_titles": [
+    "AI 전자책과 카드뉴스 만들기",
+    "AI 숏폼 7일 입문",
+    "AI 홈페이지 배우기"
+  ],
+  "topics": [
+    {
+      "id": "ai-blog",
+      "title": "AI로 블로그 글 1시간에 3개 쓰기",
+      "target": "블로그 부업을 시작했지만 글쓰기에 시간이 오래 걸리는 직장인·주부",
+      "status": "done",
+      "date": "2026-11-21",
+      "folder": "daily/2026-11-21-ai-blog",
+      "groble_product_id": "Sf8zy5"
+    },
+    {
+      "id": "ai-instagram",
+      "title": "AI 인스타 카드뉴스 운영 30일",
+      "target": "인스타 계정을 키우고 싶지만 매일 콘텐츠 만들 시간이 없는 1인 창업자",
+      "status": "done",
+      "date": "2026-11-22",
+      "folder": "daily/2026-11-22-ai-instagram",
+      "groble_product_id": "LYTAJS"
+    },
+    {
+      "id": "ai-threads",
+      "title": "AI로 스레드 팔로워 1천 명 만들기",
+      "target": "스레드를 시작했지만 무엇을 올릴지 모르는 초보",
+      "status": "done",
+      "date": "2026-11-23",
+      "folder": "daily/2026-11-23-ai-threads",
+      "groble_product_id": "QSebnF"
+    },
+    {
+      "id": "ai-smartstore",
+      "title": "AI로 스마트스토어 상세페이지 만들기",
+      "target": "상세페이지 디자인 비용이 부담되는 초보 셀러",
+      "status": "done",
+      "date": "2026-11-24",
+      "folder": "daily/2026-11-24-ai-smartstore",
+      "groble_product_id": "frQuge"
+    },
+    {
+      "id": "ai-youtube-script",
+      "title": "AI 유튜브 대본 쓰기 실전",
+      "target": "유튜브를 시작하고 싶지만 대본 쓰기가 막막한 사람",
+      "status": "done",
+      "date": "2026-11-25",
+      "folder": "daily/2026-11-25-ai-youtube-script",
+      "groble_product_id": "uRA2dR"
+    },
+    {
+      "id": "ai-excel",
+      "title": "AI로 엑셀 업무 자동화 입문",
+      "target": "반복 엑셀 업무에 시간을 뺏기는 직장인",
+      "status": "done",
+      "date": "2026-11-26",
+      "folder": "daily/2026-11-26-ai-excel",
+      "groble_product_id": "vdFBHN"
+    },
+    {
+      "id": "ai-image-goods",
+      "title": "AI 이미지로 굿즈·스티커 팔기",
+      "target": "그림을 못 그려도 디자인 상품을 팔고 싶은 사람",
+      "status": "done",
+      "date": "2026-11-27",
+      "folder": "daily/2026-11-27-ai-image-goods",
+      "groble_product_id": "z5sbad"
+    },
+    {
+      "id": "ai-translation",
+      "title": "AI 번역 부업 시작하기",
+      "target": "외국어를 조금 할 줄 알고 재택 부업을 찾는 사람",
+      "status": "pending"
+    },
+    {
+      "id": "ai-resume",
+      "title": "AI로 자소서·이력서 완성하기",
+      "target": "취업·이직 서류 작성이 막막한 구직자",
+      "status": "pending"
+    },
+    {
+      "id": "ai-ppt",
+      "title": "AI로 PPT 10분 만에 만들기",
+      "target": "발표 자료 만들기에 밤새는 직장인·대학생",
+      "status": "pending"
+    },
+    {
+      "id": "ai-chatgpt-basics",
+      "title": "50대도 하는 챗GPT 첫걸음",
+      "target": "AI가 궁금하지만 어디서부터 해야 할지 모르는 중장년",
+      "status": "pending"
+    },
+    {
+      "id": "ai-prompt",
+      "title": "돈 되는 프롬프트 작성법 50",
+      "target": "AI를 써도 원하는 결과가 안 나오는 초보",
+      "status": "pending"
+    },
+    {
+      "id": "ai-kmong-seller",
+      "title": "AI로 크몽 서비스 판매 시작하기",
+      "target": "재능 마켓에서 첫 판매를 하고 싶은 사람",
+      "status": "pending"
+    },
+    {
+      "id": "ai-ebook-sales",
+      "title": "전자책 첫 판매까지 14일",
+      "target": "전자책을 만들었지만 팔리지 않는 사람",
+      "status": "pending"
+    },
+    {
+      "id": "ai-naver-blog-ads",
+      "title": "AI 블로그 체험단·애드포스트 수익",
+      "target": "블로그로 소소한 수익을 내고 싶은 사람",
+      "status": "pending"
+    },
+    {
+      "id": "ai-shorts-script",
+      "title": "AI로 쇼츠 대본 100개 뽑기",
+      "target": "쇼츠 아이디어가 바닥난 크리에이터",
+      "status": "pending"
+    },
+    {
+      "id": "ai-voice",
+      "title": "AI 음성으로 오디오북·더빙 부업",
+      "target": "목소리 노출 없이 콘텐츠를 만들고 싶은 사람",
+      "status": "pending"
+    },
+    {
+      "id": "ai-music",
+      "title": "AI 작곡으로 배경음악 판매하기",
+      "target": "음악 지식 없이 음원 부업을 해 보고 싶은 사람",
+      "status": "pending"
+    },
+    {
+      "id": "ai-email-newsletter",
+      "title": "AI로 뉴스레터 운영하기",
+      "target": "구독자 기반 수익을 만들고 싶은 1인 창업자",
+      "status": "pending"
+    },
+    {
+      "id": "ai-online-class",
+      "title": "AI로 온라인 강의 기획·제작",
+      "target": "내 노하우를 강의로 팔고 싶은 사람",
+      "status": "pending"
+    },
+    {
+      "id": "ai-detail-copy",
+      "title": "AI 마케팅 문구 쓰기 실전",
+      "target": "광고·판매 문구 쓰기가 어려운 자영업자",
+      "status": "pending"
+    },
+    {
+      "id": "ai-small-business",
+      "title": "동네 가게 사장님 AI 활용법",
+      "target": "홍보·메뉴판·리뷰 답변에 시간을 쓰는 소상공인",
+      "status": "pending"
+    },
+    {
+      "id": "ai-study",
+      "title": "AI로 공부 시간 절반 줄이기",
+      "target": "자격증·시험 공부가 막막한 직장인",
+      "status": "pending"
+    },
+    {
+      "id": "ai-parenting-content",
+      "title": "AI로 육아 콘텐츠 부업",
+      "target": "아이를 키우며 집에서 수익을 내고 싶은 부모",
+      "status": "pending"
+    },
+    {
+      "id": "ai-real-estate-blog",
+      "title": "AI로 부동산·재테크 블로그 운영",
+      "target": "재테크 지식을 콘텐츠로 만들고 싶은 사람",
+      "status": "pending"
+    },
+    {
+      "id": "ai-automation-nocode",
+      "title": "노코드 AI 업무 자동화 입문",
+      "target": "개발을 몰라도 반복 업무를 자동화하고 싶은 사람",
+      "status": "pending"
+    },
+    {
+      "id": "ai-character",
+      "title": "AI 캐릭터로 이모티콘 도전",
+      "target": "이모티콘 작가에 도전해 보고 싶은 사람",
+      "status": "pending"
+    },
+    {
+      "id": "ai-review-marketing",
+      "title": "AI로 리뷰·후기 마케팅 하기",
+      "target": "후기를 판매로 연결하고 싶은 셀러",
+      "status": "pending"
+    },
+    {
+      "id": "ai-personal-brand",
+      "title": "AI로 퍼스널 브랜딩 시작하기",
+      "target": "나를 브랜드로 만들어 수익화하고 싶은 사람",
+      "status": "pending"
+    },
+    {
+      "id": "ai-side-roadmap",
+      "title": "AI 부업 0원에서 월 100만 원 로드맵",
+      "target": "어떤 AI 부업부터 시작할지 고민하는 사람",
+      "status": "pending"
+    }
+  ]
+}
