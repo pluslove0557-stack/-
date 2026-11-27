@@ -70,7 +70,10 @@
       "id": "ai-image-goods",
       "title": "AI 이미지로 굿즈·스티커 팔기",
       "target": "그림을 못 그려도 디자인 상품을 팔고 싶은 사람",
-      "status": "pending"
+      "status": "done",
+      "date": "2026-11-27",
+      "folder": "daily/2026-11-27-ai-image-goods",
+      "groble_product_id": "z5sbad"
     },
     {
       "id": "ai-translation",
